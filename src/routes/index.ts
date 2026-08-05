@@ -18,10 +18,11 @@ import kycRoutes from './kyc.routes';
 import damageRoutes from './damage.routes';
 import couponRoutes from './coupon.routes';
 import aiRoutes from './ai.routes';
+import { liveness, readiness, metrics } from '../controllers/health.controller';
 
 const router = Router();
 
-// Public health check
+// Public health check (existing contract preserved)
 router.get('/health', (_req, res) => {
   res.status(200).json({
     success: true,
@@ -32,6 +33,11 @@ router.get('/health', (_req, res) => {
     version: '1.0.0',
   });
 });
+
+// Liveness / readiness / metrics probes (for Docker/K8s)
+router.get('/health/liveness', liveness);
+router.get('/health/readiness', readiness);
+router.get('/health/metrics', metrics);
 
 router.use('/auth', authRoutes);
 router.use('/users', userRoutes);

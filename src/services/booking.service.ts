@@ -115,6 +115,10 @@ export class BookingService {
       if (status === 'confirmed' && booking.status !== 'pending') {
         throw new ApiError(400, 'Only pending bookings can be confirmed');
       }
+      if (status === 'confirmed') {
+        await BookingRepository.updateById(id, { status });
+        return BookingRepository.findByIdPopulated(id);
+      }
       if (status === 'declined') {
         await BookingRepository.updateById(id, {
           status,

@@ -1,0 +1,46 @@
+# ============================================================
+# RentHub Backend - Docker build context exclusions
+# ============================================================
+
+# Dependencies
+node_modules
+npm-debug.log*
+.pnpm-store
+
+# Build output
+dist
+build
+coverage
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Logs
+logs
+*.log
+
+# Uploads
+uploads
+uploads/*
+
+# Tests
+tests
+*.test.ts
+*.spec.ts
+
+# Git / CI
+.git
+.gitignore
+.github
+
+# Misc
+.DS_Store
+.idea
+.vscode
+*.md
+vitest.config.mts
+vitest.debug.config.mts
+vitest.setup.ts
+</content>

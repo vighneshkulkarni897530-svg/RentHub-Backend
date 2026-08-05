@@ -10,8 +10,16 @@ import routes from './routes';
 import { notFound } from './middleware/notFound';
 import { errorHandler } from './middleware/errorHandler';
 import { apiLimiter } from './middleware/rateLimiter';
+import { requestId, mongoSanitize } from './middleware/security';
+import { requestTiming } from './middleware/requestLogger';
 
 const app: Application = express();
+
+// --- Trust proxy (for correct req.ip behind nginx/load balancer) ---
+app.set('trust proxy', Number(env.nodeEnv === 'production' ? 1 : 0) || false);
+
+// --- Request ID (correlation ID for logs) ---
+app.use(requestId);
 
 // --- Security & middleware ---
 app.use(helmet());
@@ -26,9 +34,17 @@ app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true, limit: '2mb' }));
 app.use(cookieParser());
 
+// --- MongoDB injection protection ---
+app.use(mongoSanitize());
+
 // --- Logging ---
 if (env.nodeEnv !== 'test') {
-  app.use(morgan('combined', { stream: { write: (msg) => logger.info(msg.trim()) } }));
+  app.use(requestTiming);
+  app.use(
+    morgan('combined', {
+      stream: { write: (msg) => logger.info(msg.trim()) },
+    })
+  );
 }
 
 // --- Rate limiting ---
@@ -52,4 +68,3 @@ app.use(notFound);
 app.use(errorHandler);
 
 export default app;
-

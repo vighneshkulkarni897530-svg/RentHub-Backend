@@ -1,4 +1,5 @@
 import winston from 'winston';
+import DailyRotateFile from 'winston-daily-rotate-file';
 import env from './env';
 
 const { combine, timestamp, printf, colorize, json } = winston.format;
@@ -9,14 +10,33 @@ const consoleFormat = printf(({ level, message, timestamp: ts, ...meta }) => {
 });
 
 /**
- * Structured logger (Winston).
- * In production, outputs JSON for log aggregation.
- * In development, outputs human-readable colored logs.
+ * Structured logger (Winston) with daily-rotating file transports.
+ * - In production: JSON output to console + rotating files (error.log, combined.log).
+ * - In development: human-readable colored console output.
+ * - Rotates daily, keeps 14 days of history, max 100MB per file.
  */
 const logger = winston.createLogger({
   level: env.logLevel,
   format: combine(timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), json()),
-  transports: [new winston.transports.File({ filename: 'logs/error.log', level: 'error' })],
+  transports: [
+    // Error-level rotating log
+    new DailyRotateFile({
+      filename: 'logs/error-%DATE%.log',
+      datePattern: 'YYYY-MM-DD',
+      level: 'error',
+      maxSize: '100m',
+      maxFiles: '14d',
+      zippedArchive: true,
+    }),
+    // All-level rotating log
+    new DailyRotateFile({
+      filename: 'logs/combined-%DATE%.log',
+      datePattern: 'YYYY-MM-DD',
+      maxSize: '100m',
+      maxFiles: '14d',
+      zippedArchive: true,
+    }),
+  ],
 });
 
 if (env.nodeEnv === 'production') {
@@ -30,4 +50,3 @@ if (env.nodeEnv === 'production') {
 }
 
 export default logger;
-

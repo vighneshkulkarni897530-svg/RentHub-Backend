@@ -84,12 +84,14 @@ export function detectBackgroundUniformity(data: Buffer): number {
   const sample = data.subarray(0, Math.min(data.length, 64 * 1024));
   if (sample.length === 0) return 0;
   const buckets = new Map<number, number>();
+  let sampleCount = 0;
   for (let i = 0; i < sample.length; i += 4) {
     const key = Math.floor(sample[i] / 16);
     buckets.set(key, (buckets.get(key) || 0) + 1);
+    sampleCount++;
   }
   const top = Math.max(...buckets.values());
-  return clamp01(top / sample.length);
+  return clamp01(top / sampleCount);
 }
 
 export function clamp01(v: number): number {
