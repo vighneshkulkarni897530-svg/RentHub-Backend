@@ -62,11 +62,14 @@ const env = {
 
   invoice: {
     companyName: process.env.INVOICE_COMPANY_NAME || 'RentHub',
-    companyAddress: process.env.INVOICE_COMPANY_ADDRESS || '',
+companyAddress: process.env.INVOICE_COMPANY_ADDRESS || '',
     companyGst: process.env.INVOICE_COMPANY_GST || '',
   },
 
   logLevel: process.env.LOG_LEVEL || 'info',
+
+  sentryDsn: process.env.SENTRY_DSN || '',
+  sentryTracesSampleRate: parseFloat(process.env.SENTRY_TRACES_SAMPLE_RATE || '0.1'),
 } as const;
 
 export default env;

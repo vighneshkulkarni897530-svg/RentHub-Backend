@@ -4,6 +4,7 @@ import env from './config/env';
 import logger from './config/logger';
 import { connectDB } from './config/db';
 import { initSocket } from './socket';
+import { initSentry, setupGlobalSentry } from './config/sentry';
 
 /**
  * Server bootstrap:
@@ -12,6 +13,10 @@ import { initSocket } from './socket';
  * 3. Start listening
  */
 async function startServer() {
+  // Initialize Sentry (no-op if SENTRY_DSN not set)
+  initSentry();
+  setupGlobalSentry();
+
   try {
     await connectDB();
   } catch (error) {

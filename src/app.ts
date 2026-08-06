@@ -12,6 +12,7 @@ import { errorHandler } from './middleware/errorHandler';
 import { apiLimiter } from './middleware/rateLimiter';
 import { requestId, mongoSanitize } from './middleware/security';
 import { requestTiming } from './middleware/requestLogger';
+import * as Sentry from '@sentry/node';
 
 const app: Application = express();
 
@@ -66,5 +67,10 @@ app.use(`/api/${env.apiVersion}`, routes);
 // --- 404 & error handling ---
 app.use(notFound);
 app.use(errorHandler);
+
+// --- Sentry error handler (must be registered after routes/error handlers) ---
+if (env.sentryDsn) {
+  Sentry.setupExpressErrorHandler(app);
+}
 
 export default app;
