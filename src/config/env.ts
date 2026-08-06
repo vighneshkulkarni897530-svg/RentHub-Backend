@@ -6,7 +6,7 @@ dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 /**
  * Centralized environment configuration with sensible defaults
  * so the server can start even when optional 3rd-party keys
- * (Cloudinary / Razorpay / SMTP) are not yet configured.
+ * (Cloudinary / Razorpay / SMTP / SMS / Push) are not yet configured.
  */
 const env = {
   nodeEnv: process.env.NODE_ENV || 'development',
@@ -40,8 +40,33 @@ const env = {
     from: process.env.EMAIL_FROM || 'RentHub <no-reply@renthub.com>',
   },
 
+  sms: {
+    provider: process.env.SMS_PROVIDER || 'msg91', // 'twilio' | 'msg91'
+    twilio: {
+      accountSid: process.env.TWILIO_ACCOUNT_SID || '',
+      authToken: process.env.TWILIO_AUTH_TOKEN || '',
+      from: process.env.TWILIO_PHONE_NUMBER || '',
+    },
+    msg91: {
+      authKey: process.env.MSG91_AUTH_KEY || '',
+      senderId: process.env.MSG91_SENDER_ID || 'RENTHB',
+      templateId: process.env.MSG91_TEMPLATE_ID || '',
+    },
+  },
+
+  push: {
+    vapidPublicKey: process.env.VAPID_PUBLIC_KEY || process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || '',
+    vapidPrivateKey: process.env.VAPID_PRIVATE_KEY || '',
+    vapidSubject: process.env.VAPID_SUBJECT || 'mailto:no-reply@renthub.com',
+  },
+
+  invoice: {
+    companyName: process.env.INVOICE_COMPANY_NAME || 'RentHub',
+    companyAddress: process.env.INVOICE_COMPANY_ADDRESS || '',
+    companyGst: process.env.INVOICE_COMPANY_GST || '',
+  },
+
   logLevel: process.env.LOG_LEVEL || 'info',
 } as const;
 
 export default env;
-

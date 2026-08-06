@@ -4,7 +4,24 @@ import env from '../config/env';
 import PaymentRepository from '../repositories/PaymentRepository';
 import BookingRepository from '../repositories/BookingRepository';
 import notificationService from './notification.service';
+import emailService from './email.service';
+import invoiceService from './invoice.service';
+import refundService from './refund.service';
+import payoutService from './payout.service';
+import loyaltyService from './loyalty.service';
 import { razorpayInstance, isConfigured } from '../config/razorpay';
+
+// ============================================================
+// RentHub - Payment Service (Razorpay production integration)
+// ============================================================
+// - Payment orders (UPI / Cards / Net Banking / Wallets)
+// - Signature verification
+// - Payment history
+// - Invoice generation on completion
+// - Refund workflow delegation
+// - Owner payout/settlement tracking
+// Preserves all existing endpoints & behavior.
+// ============================================================
 
 export class PaymentService {
   /**
@@ -112,12 +129,29 @@ export class PaymentService {
       paymentStatus: 'paid',
     });
 
+    // Notify owner
     void notificationService.notifyPaymentReceived({
       userId: payment.owner.toString(),
       title: 'Payment received',
       message: 'A payment has been received for your booking.',
       link: '/owner/earnings',
     });
+
+    // --- Phase 12 enterprise workflows (best-effort, non-blocking) ---
+    // 1. Generate invoice
+    void invoiceService.createInvoiceForPayment(payment.id).catch(() => null);
+    // 2. Send payment confirmation email
+    void emailService.sendPaymentSuccessEmail(
+      (payment as any).user?.email || 'customer@renthub.com',
+      (payment as any).user?.name || 'Customer',
+      {
+        amount: payment.amount,
+        transactionId: payment.razorpayPaymentId || payment.transactionId,
+        link: `${env.clientUrl}/customer/invoices`,
+      }
+    ).catch(() => null);
+    // 3. Award loyalty points
+    void loyaltyService.awardPointsForPayment(payment.user.toString(), payment.amount, payment.id).catch(() => null);
 
     return updatedPayment;
   }
@@ -139,11 +173,49 @@ export class PaymentService {
       entry.bookings += 1;
       monthly.set(key, entry);
     }
+// --- Phase 12: payout / settlement tracking ---
+    let settlement = { totalEarnings: 0, settledAmount: 0, pendingAmount: 0, availableBalance: 0 };
+    try {
+      settlement = await payoutService.getSettlementSummary(ownerId);
+    } catch {
+      // ignore settlement errors — earnings still returned
+    }
+
     return {
       total,
       monthly: Array.from(monthly.entries()).map(([month, value]) => ({ month, ...value })),
       count: payments.length,
+      availableBalance: settlement.availableBalance,
     };
+  }
+
+  /**
+   * Get payment history (alias of getPayments with richer metadata).
+   */
+  async getPaymentHistory(userId: string, role: string, options: any) {
+    const result = await this.getPayments(userId, role, options);
+    if (result?.data) {
+      result.data = result.data.map((p: any) => ({
+        ...(p.toObject ? p.toObject() : p),
+        hasInvoice: Boolean((p as any).transactionId),
+        canRefund: ['completed'].includes(p.status),
+      }));
+    }
+    return result;
+  }
+
+  /**
+   * Refund workflow entry point (admin/owner initiated) — delegates to RefundService.
+   */
+  async initiateRefund(input: { paymentId: string; amount?: number; reason?: string; method?: 'original' | 'wallet'; initiatedBy: string }) {
+    return refundService.initiateRefund(input);
+  }
+
+  /**
+   * Payout tracking — delegates to PayoutService.
+   */
+  async createPayout(ownerId: string, input: { method: 'bank' | 'upi' | 'wallet'; amount?: number; accountDetails?: Record<string, unknown> }) {
+    return payoutService.createPayout(ownerId, input);
   }
 }
 

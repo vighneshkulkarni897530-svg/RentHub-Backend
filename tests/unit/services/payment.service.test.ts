@@ -29,6 +29,36 @@ vi.mock('../../../src/services/notification.service', () => ({
   },
 }));
 
+vi.mock('../../../src/services/email.service', () => ({
+  default: {
+    sendPaymentSuccessEmail: vi.fn().mockResolvedValue(undefined),
+  },
+}));
+
+vi.mock('../../../src/services/invoice.service', () => ({
+  default: {
+    createInvoiceForPayment: vi.fn().mockResolvedValue(undefined),
+  },
+}));
+
+vi.mock('../../../src/services/loyalty.service', () => ({
+  default: {
+    awardPointsForPayment: vi.fn().mockResolvedValue(undefined),
+  },
+}));
+
+vi.mock('../../../src/services/payout.service', () => ({
+  default: {
+    getSettlementSummary: vi.fn().mockResolvedValue({ availableBalance: 0 }),
+  },
+}));
+
+vi.mock('../../../src/services/refund.service', () => ({
+  default: {
+    initiateRefund: vi.fn().mockResolvedValue(undefined),
+  },
+}));
+
 vi.mock('../../../src/config/razorpay', () => ({
   default: { razorpayInstance: null, isConfigured: false },
   razorpayInstance: null,

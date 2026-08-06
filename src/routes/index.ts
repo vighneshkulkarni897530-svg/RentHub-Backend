@@ -18,6 +18,12 @@ import kycRoutes from './kyc.routes';
 import damageRoutes from './damage.routes';
 import couponRoutes from './coupon.routes';
 import aiRoutes from './ai.routes';
+import invoiceRoutes from './invoice.routes';
+import refundRoutes from './refund.routes';
+import payoutRoutes from './payout.routes';
+import deliveryRoutes from './delivery.routes';
+import notificationPreferenceRoutes from './notificationPreference.routes';
+import loyaltyRoutes from './loyalty.routes';
 import { liveness, readiness, metrics } from '../controllers/health.controller';
 
 const router = Router();
@@ -58,6 +64,12 @@ router.use('/damage', damageRoutes);
 router.use('/coupons', couponRoutes);
 router.use('/uploads', uploadRoutes);
 router.use('/ai', aiRoutes);
+router.use('/invoices', invoiceRoutes);
+router.use('/refunds', refundRoutes);
+router.use('/payouts', payoutRoutes);
+router.use('/delivery', deliveryRoutes);
+router.use('/notification-preferences', notificationPreferenceRoutes);
+router.use('/loyalty', loyaltyRoutes);
 
 export default router;
 

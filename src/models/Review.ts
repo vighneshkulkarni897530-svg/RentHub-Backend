@@ -1,5 +1,7 @@
 import mongoose, { Schema, Document, Types } from 'mongoose';
 
+export type ReviewModerationStatus = 'pending' | 'approved' | 'rejected' | 'flagged';
+
 export interface IReview extends Document {
   _id: Types.ObjectId;
   product: Types.ObjectId;
@@ -7,7 +9,11 @@ export interface IReview extends Document {
   user: Types.ObjectId;
   rating: number;
   comment: string;
+  images: string[];
   isVerified: boolean;
+  moderationStatus: ReviewModerationStatus;
+  moderatedBy?: Types.ObjectId;
+  moderatedAt?: Date;
   response?: string;
   respondedBy?: Types.ObjectId;
   respondedAt?: Date;
@@ -20,7 +26,15 @@ const reviewSchema = new Schema<IReview>(
     user: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
     rating: { type: Number, required: true, min: 1, max: 5 },
     comment: { type: String, required: true, maxlength: 1000 },
+    images: [{ type: String }],
     isVerified: { type: Boolean, default: false },
+    moderationStatus: {
+      type: String,
+      enum: ['pending', 'approved', 'rejected', 'flagged'],
+      default: 'approved',
+    },
+    moderatedBy: { type: Schema.Types.ObjectId, ref: 'User' },
+    moderatedAt: { type: Date },
     response: { type: String, maxlength: 1000 },
     respondedBy: { type: Schema.Types.ObjectId, ref: 'User' },
     respondedAt: { type: Date },
