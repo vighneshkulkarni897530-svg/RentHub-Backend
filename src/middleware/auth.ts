@@ -16,6 +16,11 @@ export interface AuthRequest extends Request {
   };
 }
 
+interface JwtPayload extends jwt.JwtPayload {
+  sub: string;
+  role: UserRole;
+}
+
 /**
  * JWT authentication middleware.
  * Verifies the Bearer token and attaches the user payload to req.user.
@@ -27,17 +32,19 @@ export const authenticate = asyncHandler(async (req: AuthRequest, _res: Response
   }
 
   const token = header.split(' ')[1];
-  let decoded: any;
+  let decoded: JwtPayload;
   try {
-    decoded = jwt.verify(token, env.jwtAccessSecret);
+    decoded = jwt.verify(token, env.jwtAccessSecret) as JwtPayload;
   } catch (error) {
-    if (error instanceof jwt.TokenExpiredError) {
-      throw new ApiError(401, 'Your session has expired. Please log in again.');
+    if (error instanceof ApiError) {
+      throw error; // Re-throw custom errors
     }
     if (error instanceof jwt.JsonWebTokenError) {
+      // This will catch both TokenExpiredError and other JWT issues
       throw new ApiError(401, 'Invalid token. Please log in again.');
     }
-    throw new ApiError(401, 'Authentication failed.');
+    // For any other unexpected error during verification
+    throw new ApiError(500, 'Internal server error during authentication.');
   }
 
   const user = await User.findById(decoded.sub).select('name email role status verified');
@@ -75,4 +82,3 @@ export const authorize =
   };
 
 export default { authenticate, authorize };
-
