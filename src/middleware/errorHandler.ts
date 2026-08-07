@@ -18,11 +18,12 @@ type ErrorWithContext = Error & {
  * { success, message, errors, statusCode } envelope.
  */
 export const errorHandler = (err: ErrorWithContext, req: Request, res: Response, _next: NextFunction) => {
-  let error = err;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let error: any = err;
 
   if (error instanceof mongoose.Error.ValidationError) {
     const errors: Record<string, string[]> = {};
-    Object.keys(error.errors).forEach((key) => {
+    Object.keys(error.errors || {}).forEach((key) => {
       errors[key] = [error.errors[key].message];
     });
     error = new ApiError(400, 'Validation error', errors);

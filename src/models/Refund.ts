@@ -23,11 +23,11 @@ export interface IRefund extends Document {
 
 const refundSchema = new Schema<IRefund>(
   {
-    refundId: { type: String, unique: true, required: true, index: true },
-    booking: { type: Schema.Types.ObjectId, ref: 'Booking', required: true, index: true },
-    payment: { type: Schema.Types.ObjectId, ref: 'Payment', required: true, index: true },
-    user: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
-    owner: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
+refundId: { type: String, unique: true, required: true, index: true },
+    booking: { type: Schema.Types.ObjectId, ref: 'Booking', required: true },
+    payment: { type: Schema.Types.ObjectId, ref: 'Payment', required: true },
+    user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     amount: { type: Number, required: true, min: 0 },
     razorpayRefundId: { type: String },
     status: { type: String, enum: ['pending', 'processing', 'completed', 'failed'], default: 'pending' },
