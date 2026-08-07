@@ -21,13 +21,25 @@ const storage = multer.diskStorage({
 // Use memory storage so files can be uploaded to Cloudinary directly
 const memoryStorage = multer.memoryStorage();
 
-const ALLOWED_TYPES = /jpeg|jpg|png|gif|webp|svg|pdf/;
+// SVG is intentionally excluded because it can contain executable scripts (XSS risk).
+const ALLOWED_TYPES = /jpeg|jpg|png|gif|webp|pdf/;
+
+// Strict MIME allow-list (defense in depth — never trust the extension alone).
+const ALLOWED_MIMES: Record<string, string[]> = {
+  'image/jpeg': ['.jpg', '.jpeg'],
+  'image/png': ['.png'],
+  'image/gif': ['.gif'],
+  'image/webp': ['.webp'],
+  'application/pdf': ['.pdf'],
+};
 
 const fileFilter = (_req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-  const extname = ALLOWED_TYPES.test(path.extname(file.originalname).toLowerCase());
-  const mimetype = ALLOWED_TYPES.test(file.mimetype);
-  if (extname && mimetype) return cb(null, true);
-  cb(new ApiError(400, 'Only image and PDF files are allowed'));
+  const ext = path.extname(file.originalname).toLowerCase();
+  const allowedExt = /jpeg|jpg|png|gif|webp|pdf/.test(ext);
+  const mimeEntry = ALLOWED_MIMES[file.mimetype];
+  const allowedMime = Boolean(mimeEntry && mimeEntry.includes(ext));
+  if (allowedExt && allowedMime) return cb(null, true);
+  cb(new ApiError(400, "Only JPEG, PNG, GIF, WebP and PDF files are allowed"));
 };
 
 const limits = { fileSize: 5 * 1024 * 1024 }; // 5 MB

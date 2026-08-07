@@ -157,10 +157,10 @@ export class AuthService {
   }
 
   async changePassword(userId: string, currentPassword: string, newPassword: string): Promise<void> {
-    const user = await UserRepository.findByIdWithRole(userId);
+    // Single query that includes the password field (avoids N+1).
+    const user = await UserRepository.findByIdWithPassword(userId);
     if (!user) throw new ApiError(404, 'User not found');
-    const passwordField = await (user as any).constructor.findById(userId).select('+password');
-    if (!passwordField || !(await passwordField.comparePassword(currentPassword))) {
+    if (!(await user.comparePassword(currentPassword))) {
       throw new ApiError(401, 'Current password is incorrect');
     }
     await UserRepository.updateById(userId, { password: newPassword });
@@ -217,4 +217,3 @@ export class AuthService {
 }
 
 export default new AuthService();
-

@@ -2,6 +2,7 @@ import { Router } from 'express';
 import AuthController from '../controllers/auth.controller';
 import { authenticate } from '../middleware/auth';
 import { validate } from '../middleware/validate';
+import { authLimiter } from '../middleware/rateLimiter';
 import {
   registerSchema,
   loginSchema,
@@ -14,6 +15,9 @@ import {
 } from '../validators/auth';
 
 const router = Router();
+
+// Apply stricter rate limiting to authentication endpoints to prevent brute-force.
+router.use(authLimiter);
 
 router.post('/register', validate({ body: registerSchema }), AuthController.register);
 router.post('/login', validate({ body: loginSchema }), AuthController.login);

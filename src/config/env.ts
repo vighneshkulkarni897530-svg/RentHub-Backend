@@ -62,7 +62,7 @@ const env = {
 
   invoice: {
     companyName: process.env.INVOICE_COMPANY_NAME || 'RentHub',
-companyAddress: process.env.INVOICE_COMPANY_ADDRESS || '',
+    companyAddress: process.env.INVOICE_COMPANY_ADDRESS || '',
     companyGst: process.env.INVOICE_COMPANY_GST || '',
   },
 

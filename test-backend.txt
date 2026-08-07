@@ -1,0 +1,204 @@
+
+> renthub-backend@1.0.0 test
+> vitest run
+
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.10 [39m[90md:/mini project/renthub-backend[39m
+
+ [32m✓[39m tests/unit/services/ai/fraud.service.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m tests/unit/services/refund.service.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m tests/unit/middleware/auth.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 42[2mms[22m[39m
+ [32m✓[39m tests/unit/services/supportTicket.service.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [31m❯[39m tests/unit/services/payment.service.test.ts [2m([22m[2m12 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 12[2mms[22m[39m
+       [32m✓[39m creates a mock order when razorpay not configured[32m 2[2mms[22m[39m
+       [32m✓[39m throws 404 when booking not found[32m 1[2mms[22m[39m
+       [32m✓[39m throws 403 when not renter[32m 0[2mms[22m[39m
+       [32m✓[39m throws 400 when already paid[32m 0[2mms[22m[39m
+       [32m✓[39m updates existing payment record[32m 0[2mms[22m[39m
+       [32m✓[39m verifies payment when razorpay not configured[32m 1[2mms[22m[39m
+       [32m✓[39m throws 404 when payment not found[32m 0[2mms[22m[39m
+       [32m✓[39m throws 403 when not payment owner[32m 0[2mms[22m[39m
+       [32m✓[39m admin lists all[32m 0[2mms[22m[39m
+       [32m✓[39m owner lists their payments[32m 0[2mms[22m[39m
+       [32m✓[39m customer lists their payments[32m 0[2mms[22m[39m
+[31m       [31m×[31m returns earnings summary[39m[32m 5[2mms[22m[39m
+ [31m❯[39m tests/unit/services/auth.service.test.ts [2m([22m[2m26 tests[22m[2m | [22m[31m3 failed[39m[2m)[22m[32m 25[2mms[22m[39m
+       [32m✓[39m creates a user and returns tokens[32m 5[2mms[22m[39m
+       [32m✓[39m throws 409 when email is taken[32m 1[2mms[22m[39m
+       [32m✓[39m returns tokens for valid credentials[32m 1[2mms[22m[39m
+       [32m✓[39m throws 401 for invalid password[32m 0[2mms[22m[39m
+       [32m✓[39m throws 403 when email not verified[32m 0[2mms[22m[39m
+       [32m✓[39m throws 403 when suspended[32m 0[2mms[22m[39m
+       [32m✓[39m throws 401 when user not found[32m 0[2mms[22m[39m
+       [32m✓[39m rotates tokens on valid refresh token[32m 3[2mms[22m[39m
+       [32m✓[39m throws 401 for invalid token[32m 1[2mms[22m[39m
+       [32m✓[39m throws 401 when refresh token revoked[32m 0[2mms[22m[39m
+       [32m✓[39m throws 401 when refresh token expired[32m 1[2mms[22m[39m
+       [32m✓[39m revokes the refresh token[32m 0[2mms[22m[39m
+       [32m✓[39m revokes all tokens for user[32m 0[2mms[22m[39m
+       [32m✓[39m sends reset email when user exists[32m 0[2mms[22m[39m
+       [32m✓[39m does not throw when user does not exist[32m 0[2mms[22m[39m
+       [32m✓[39m resets password with valid token[32m 0[2mms[22m[39m
+       [32m✓[39m throws 400 for invalid token[32m 0[2mms[22m[39m
+       [32m✓[39m verifies email with valid token[32m 1[2mms[22m[39m
+       [32m✓[39m throws 400 for invalid token[32m 0[2mms[22m[39m
+       [32m✓[39m sends verification email[32m 0[2mms[22m[39m
+       [32m✓[39m does nothing when user is already verified[32m 0[2mms[22m[39m
+[31m       [31m×[31m changes password with correct current password[39m[32m 3[2mms[22m[39m
+[31m       [31m×[31m throws 404 when user not found[39m[32m 3[2mms[22m[39m
+[31m       [31m×[31m throws 401 when current password incorrect[39m[32m 1[2mms[22m[39m
+       [32m✓[39m returns public user profile[32m 0[2mms[22m[39m
+       [32m✓[39m throws 404 when not found[32m 0[2mms[22m[39m
+(node:12268) [MONGOOSE] Warning: Duplicate schema index on {"user":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ [32m✓[39m tests/unit/services/notification.service.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m tests/unit/services/booking.service.test.ts [2m([22m[2m21 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m tests/unit/services/ai/insights.service.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 58[2mms[22m[39m
+ [32m✓[39m tests/unit/services/kyc.service.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m tests/unit/services/ai/recommendation.service.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m tests/unit/services/damage.service.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m tests/unit/services/admin.service.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m tests/unit/services/product.service.test.ts [2m([22m[2m23 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m tests/unit/services/ai/search.service.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m tests/unit/services/delivery.service.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m tests/unit/utils/asyncHandler.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m tests/unit/utils/ai-text.test.ts [2m([22m[2m22 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m tests/unit/services/ai/semantic.service.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m tests/unit/services/category.service.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m tests/unit/utils/ai-image.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m tests/unit/utils/jwt.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m tests/unit/services/loyalty.service.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m tests/unit/services/owner.service.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m tests/unit/services/user.service.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m tests/unit/services/coupon.service.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m tests/unit/services/wishlist.service.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m tests/unit/services/invoice.service.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m tests/unit/services/message.service.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m tests/unit/middleware/errorHandler.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m tests/unit/services/notificationPreferences.service.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m tests/unit/services/ai/pricing.service.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m tests/unit/utils/slugify.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m tests/unit/services/review.service.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m tests/unit/services/ai/description.service.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/unit/middleware/validate.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m tests/unit/services/ai/image.service.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/unit/utils/errors.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m tests/unit/services/report.service.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m tests/unit/services/payout.service.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [31m❯[39m tests/unit/services/upload.service.test.ts [2m([22m[2m4 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 7[2mms[22m[39m
+       [32m✓[39m throws 400 when no file[32m 2[2mms[22m[39m
+[31m       [31m×[31m returns file metadata when cloudinary not configured[39m[32m 3[2mms[22m[39m
+       [32m✓[39m throws 400 when no files[32m 0[2mms[22m[39m
+[31m       [31m×[31m uploads multiple files[39m[32m 0[2mms[22m[39m
+ [32m✓[39m tests/minimal.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m tests/unit/middleware/upload.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m tests/unit/middleware/notFound.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/global-test.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m tests/setup-check.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 2[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 6 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/services/auth.service.test.ts[2m > [22mAuthService[2m > [22mchangePassword[2m > [22mchanges password with correct current password
+[31m[1mTypeError[22m: default.findByIdWithPassword is not a function[39m
+[36m [2m❯[22m AuthService.changePassword src/services/auth.service.ts:[2m161:39[22m[39m
+    [90m159|[39m   async changePassword(userId: string, currentPassword: string, newPas…
+    [90m160|[39m     [90m// Single query that includes the password field (avoids N+1).[39m
+    [90m161|[39m     [35mconst[39m user [33m=[39m [35mawait[39m [33mUserRepository[39m[33m.[39m[34mfindByIdWithPassword[39m(userId)[33m;[39m
+    [90m   |[39m                                       [31m^[39m
+    [90m162|[39m     [35mif[39m ([33m![39muser) [35mthrow[39m [35mnew[39m [33mApiError[39m([34m404[39m[33m,[39m [32m'User not found'[39m)[33m;[39m
+    [90m163|[39m     [35mif[39m ([33m![39m([35mawait[39m user[33m.[39m[34mcomparePassword[39m(currentPassword))) {
+[90m [2m❯[22m tests/unit/services/auth.service.test.ts:[2m288:25[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/services/auth.service.test.ts[2m > [22mAuthService[2m > [22mchangePassword[2m > [22mthrows 404 when user not found
+[31m[1mAssertionError[22m: expected TypeError: __vite_ssr_import_3__.default.… to match object { statusCode: 404 }[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- {[39m
+[32m-   "statusCode": 404,[39m
+[31m+ TypeError {[39m
+[31m+   "message": "__vite_ssr_import_3__.default.findByIdWithPassword is not a function",[39m
+[2m  }[22m
+
+[36m [2m❯[22m tests/unit/services/auth.service.test.ts:[2m294:83[22m[39m
+    [90m292|[39m     [34mit[39m([32m'throws 404 when user not found'[39m[33m,[39m [35masync[39m () [33m=>[39m {
+    [90m293|[39m       ([33mUserRepository[39m[33m.[39mfindByIdWithRole [35mas[39m any)[33m.[39m[34mmockResolvedValue[39m([35mnull[39m)[33m;[39m
+    [90m294|[39m       await expect(AuthService.changePassword('x', 'CurrentPass1', 'Ne…
+    [90m   |[39m                                                                                   [31m^[39m
+    [90m295|[39m         statusCode[33m:[39m [34m404[39m[33m,[39m
+    [90m296|[39m       })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/services/auth.service.test.ts[2m > [22mAuthService[2m > [22mchangePassword[2m > [22mthrows 401 when current password incorrect
+[31m[1mAssertionError[22m: expected TypeError: __vite_ssr_import_3__.default.… to match object { statusCode: 401 }[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- {[39m
+[32m-   "statusCode": 401,[39m
+[31m+ TypeError {[39m
+[31m+   "message": "__vite_ssr_import_3__.default.findByIdWithPassword is not a function",[39m
+[2m  }[22m
+
+[36m [2m❯[22m tests/unit/services/auth.service.test.ts:[2m309:85[22m[39m
+    [90m307|[39m       }[33m;[39m
+    [90m308|[39m       ([33mUserRepository[39m[33m.[39mfindByIdWithRole [35mas[39m any)[33m.[39m[34mmockResolvedValue[39m(user)[33m;[39m
+    [90m309|[39m       await expect(AuthService.changePassword('user1', 'WrongPass1', '…
+    [90m   |[39m                                                                                     [31m^[39m
+    [90m310|[39m         statusCode[33m:[39m [34m401[39m[33m,[39m
+    [90m311|[39m       })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/services/payment.service.test.ts[2m > [22mPaymentService[2m > [22mgetEarnings[2m > [22mreturns earnings summary
+[31m[1mTypeError[22m: default.getEarningsAggregation is not a function[39m
+[36m [2m❯[22m PaymentService.getEarnings src/services/payment.service.ts:[2m167:47[22m[39m
+    [90m165|[39m [35masync[39m [34mgetEarnings[39m(ownerId[33m:[39m string) {
+    [90m166|[39m     // Aggregation-based earnings summary (avoids loading all payments…
+    [90m167|[39m     const [summary] = await PaymentRepository.getEarningsAggregation(o…
+    [90m   |[39m                                               [31m^[39m
+    [90m168|[39m     [35mconst[39m total [33m=[39m summary[33m?.[39mtotal [33m||[39m [34m0[39m[33m;[39m
+    [90m169|[39m     [35mconst[39m count [33m=[39m summary[33m?.[39mcount [33m||[39m [34m0[39m[33m;[39m
+[90m [2m❯[22m tests/unit/services/payment.service.test.ts:[2m199:43[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/services/upload.service.test.ts[2m > [22mUploadService[2m > [22muploadFile[2m > [22mreturns file metadata when cloudinary not configured
+[31m[1mError[22m: File storage is not configured. Please set CLOUDINARY_* environment variables.[39m
+[36m [2m❯[22m UploadService.uploadFile src/services/upload.service.ts:[2m29:11[22m[39m
+    [90m 27|[39m
+    [90m 28|[39m     // Cloudinary not configured — reject instead of silently dropping…
+    [90m 29|[39m     throw new ApiError(503, 'File storage is not configured. Please se…
+    [90m   |[39m           [31m^[39m
+    [90m 30|[39m   }
+    [90m 31|[39m
+[90m [2m❯[22m tests/unit/services/upload.service.test.ts:[2m28:42[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/services/upload.service.test.ts[2m > [22mUploadService[2m > [22muploadMultiple[2m > [22muploads multiple files
+[31m[1mError[22m: File storage is not configured. Please set CLOUDINARY_* environment variables.[39m
+[36m [2m❯[22m UploadService.uploadFile src/services/upload.service.ts:[2m29:11[22m[39m
+    [90m 27|[39m
+    [90m 28|[39m     // Cloudinary not configured — reject instead of silently dropping…
+    [90m 29|[39m     throw new ApiError(503, 'File storage is not configured. Please se…
+    [90m   |[39m           [31m^[39m
+    [90m 30|[39m   }
+    [90m 31|[39m
+[90m [2m❯[22m src/services/upload.service.ts:[2m37:64[22m[39m
+[90m [2m❯[22m UploadService.uploadMultiple src/services/upload.service.ts:[2m37:45[22m[39m
+[90m [2m❯[22m tests/unit/services/upload.service.test.ts:[2m42:42[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m3 failed[39m[22m[2m | [22m[1m[32m43 passed[39m[22m[90m (46)[39m
+[2m      Tests [22m [1m[31m6 failed[39m[22m[2m | [22m[1m[32m377 passed[39m[22m[90m (383)[39m
+[2m   Start at [22m 23:29:27
+[2m   Duration [22m 13.85s[2m (transform 783ms, setup 3.71s, import 2.19s, tests 423ms, environment 4ms)[22m
+

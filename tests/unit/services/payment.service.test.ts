@@ -9,7 +9,8 @@ vi.mock('../../../src/repositories/PaymentRepository', () => ({
     findByRazorpayOrderId: vi.fn(),
     listAll: vi.fn(),
     listForOwner: vi.fn(),
-    listForUser: vi.fn(),
+listForUser: vi.fn(),
+    getEarningsAggregation: vi.fn(),
     find: vi.fn(),
   },
 }));
@@ -190,15 +191,15 @@ describe('PaymentService', () => {
     });
   });
 
-  describe('getEarnings', () => {
+describe('getEarnings', () => {
     it('returns earnings summary', async () => {
-      (PaymentRepository.find as any).mockResolvedValue([
-        { netAmount: 500, createdAt: new Date(), updatedAt: new Date() },
-        { netAmount: 300, createdAt: new Date(), updatedAt: new Date() },
+      (PaymentRepository.getEarningsAggregation as any).mockResolvedValue([
+        { total: 800, count: 2, monthly: [{ month: 'Jan', amount: 800, bookings: 2 }] },
       ]);
       const result = await PaymentService.getEarnings('owner1');
       expect(result.total).toBe(800);
       expect(result.count).toBe(2);
+      expect(result.monthly).toHaveLength(1);
     });
   });
 });

@@ -162,16 +162,19 @@ export class PaymentService {
     return PaymentRepository.listForUser(userId, options);
   }
 
-  async getEarnings(ownerId: string) {
-    const payments = await PaymentRepository.find({ owner: ownerId, status: 'completed' });
-    const total = payments.reduce((s: number, p: any) => s + (p.netAmount || p.amount || 0), 0);
+async getEarnings(ownerId: string) {
+    // Aggregation-based earnings summary (avoids loading all payments into memory)
+    const [summary] = await PaymentRepository.getEarningsAggregation(ownerId);
+    const total = summary?.total || 0;
+    const count = summary?.count || 0;
+    const monthlyRows = summary?.monthly || [];
+
     const monthly = new Map<string, { amount: number; bookings: number }>();
-    for (const p of payments as any[]) {
-      const key = new Date(p.createdAt || p.updatedAt || Date.now()).toLocaleString('en-US', { month: 'short' });
-      const entry = monthly.get(key) || { amount: 0, bookings: 0 };
-      entry.amount += p.netAmount || p.amount || 0;
-      entry.bookings += 1;
-      monthly.set(key, entry);
+    for (const row of monthlyRows) {
+      const entry = monthly.get(row.month) || { amount: 0, bookings: 0 };
+      entry.amount += row.amount || 0;
+      entry.bookings += row.bookings || 0;
+      monthly.set(row.month, entry);
     }
 // --- Phase 12: payout / settlement tracking ---
     let settlement = { totalEarnings: 0, settledAmount: 0, pendingAmount: 0, availableBalance: 0 };
@@ -183,8 +186,8 @@ export class PaymentService {
 
     return {
       total,
-      monthly: Array.from(monthly.entries()).map(([month, value]) => ({ month, ...value })),
-      count: payments.length,
+monthly: Array.from(monthly.entries()).map(([month, value]) => ({ month, ...value })),
+      count,
       availableBalance: settlement.availableBalance,
     };
   }
@@ -202,6 +205,69 @@ export class PaymentService {
       }));
     }
     return result;
+  }
+
+/**
+   * Razorpay webhook handler. Verifies the X-Razorpay-Signature header
+   * and reconciles payment/refund events server-side. This is the
+   * source of truth for payment settlement (idempotent by event id).
+   */
+async handleWebhook(rawBody: string, signature: string): Promise<{ event: string; processed: boolean }> {
+    if (!isConfigured || !razorpayInstance) {
+      throw new ApiError(503, 'Payment gateway is not configured');
+    }
+
+    // Verify Razorpay signature (HMAC-SHA256 of the raw body string)
+    const expected = crypto
+      .createHmac('sha256', env.razorpay.keySecret)
+      .update(rawBody)
+      .digest('hex');
+    if (expected !== signature) {
+      throw new ApiError(401, 'Invalid webhook signature');
+    }
+
+    const body = JSON.parse(rawBody) as { event?: string; payload?: Record<string, any> };
+    const event = body.event || '';
+    const data = body.payload || {};
+
+    // Handle payment.authorized / captured events
+    if (event === 'payment.captured' || event === 'payment.authorized') {
+      const paymentEntity = data.payment?.entity;
+      const orderId = paymentEntity?.order_id;
+      if (orderId) {
+        const payment = await PaymentRepository.findByRazorpayOrderId(orderId);
+        if (payment && payment.status !== 'completed') {
+          await PaymentRepository.updateById(payment.id, {
+            razorpayPaymentId: paymentEntity.id,
+            status: 'completed',
+            completedAt: new Date(),
+          });
+          await BookingRepository.updateById(payment.booking.toString(), { paymentStatus: 'paid' });
+          void notificationService.notifyPaymentReceived({
+            userId: payment.owner.toString(),
+            title: 'Payment received',
+            message: 'A payment has been received for your booking.',
+            link: '/owner/earnings',
+          });
+          void invoiceService.createInvoiceForPayment(payment.id).catch(() => null);
+        }
+      }
+    }
+
+    // Handle refund events
+    if (event === 'refund.processed' || event === 'refund.created') {
+      const refundEntity = data.refund?.entity;
+      const paymentId = refundEntity?.payment_id;
+      if (paymentId) {
+        const payment = await PaymentRepository.findOne({ razorpayPaymentId: paymentId });
+        if (payment) {
+          await PaymentRepository.updateById(payment.id, { status: 'refunded' });
+          await BookingRepository.updateById(payment.booking.toString(), { paymentStatus: 'refunded' });
+        }
+      }
+    }
+
+    return { event, processed: true };
   }
 
   /**

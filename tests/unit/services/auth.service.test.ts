@@ -7,8 +7,9 @@ vi.mock('../../../src/repositories/UserRepository', () => ({
     create: vi.fn(),
     updateTokens: vi.fn(),
     updateById: vi.fn(),
-    findByEmailForAuth: vi.fn(),
+findByEmailForAuth: vi.fn(),
     findByIdWithRole: vi.fn(),
+    findByIdWithPassword: vi.fn(),
     findByEmail: vi.fn(),
     findOne: vi.fn(),
     countDocuments: vi.fn(),
@@ -273,39 +274,31 @@ it('rotates tokens on valid refresh token', async () => {
     });
   });
 
-  describe('changePassword', () => {
-it('changes password with correct current password', async () => {
+describe('changePassword', () => {
+    it('changes password with correct current password', async () => {
       const user = {
         ...mockUser,
-        constructor: {
-          findById: vi.fn(() => ({
-            select: vi.fn().mockResolvedValue({ ...mockUser, comparePassword: vi.fn().mockResolvedValue(true) }),
-          })),
-        },
+        comparePassword: vi.fn().mockResolvedValue(true),
       };
-      (UserRepository.findByIdWithRole as any).mockResolvedValue(user);
+      (UserRepository.findByIdWithPassword as any).mockResolvedValue(user);
       (UserRepository.updateById as any).mockResolvedValue(mockUser);
       await AuthService.changePassword('user1', 'CurrentPass1', 'NewPassword1');
       expect(UserRepository.updateById).toHaveBeenCalled();
     });
 
     it('throws 404 when user not found', async () => {
-      (UserRepository.findByIdWithRole as any).mockResolvedValue(null);
+      (UserRepository.findByIdWithPassword as any).mockResolvedValue(null);
       await expect(AuthService.changePassword('x', 'CurrentPass1', 'NewPassword1')).rejects.toMatchObject({
         statusCode: 404,
       });
     });
 
-it('throws 401 when current password incorrect', async () => {
+    it('throws 401 when current password incorrect', async () => {
       const user = {
         ...mockUser,
-        constructor: {
-          findById: vi.fn(() => ({
-            select: vi.fn().mockResolvedValue({ ...mockUser, comparePassword: vi.fn().mockResolvedValue(false) }),
-          })),
-        },
+        comparePassword: vi.fn().mockResolvedValue(false),
       };
-      (UserRepository.findByIdWithRole as any).mockResolvedValue(user);
+      (UserRepository.findByIdWithPassword as any).mockResolvedValue(user);
       await expect(AuthService.changePassword('user1', 'WrongPass1', 'NewPassword1')).rejects.toMatchObject({
         statusCode: 401,
       });

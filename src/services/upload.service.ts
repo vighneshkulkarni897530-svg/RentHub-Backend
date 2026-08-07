@@ -3,8 +3,9 @@ import { uploadToCloudinary, isConfigured } from '../config/cloudinary';
 
 export class UploadService {
   /**
-   * Upload a single file. Uses Cloudinary when configured,
-   * otherwise stores locally (returns the local file path info).
+   * Upload a single file. Uses Cloudinary when configured.
+   * If Cloudinary is not configured, the upload is rejected so callers
+   * never end up with broken image URLs in production.
    */
   async uploadFile(file: Express.Multer.File, folder = 'renthub') {
     if (!file) throw new ApiError(400, 'No file uploaded');
@@ -24,29 +25,18 @@ export class UploadService {
       }
     }
 
-    // Fallback: return the file metadata (in a real app you'd save to disk)
-    return {
-      url: '',
-      publicId: '',
-      filename: file.originalname,
-      mimetype: file.mimetype,
-      size: file.size,
-      note: 'Cloudinary not configured - file not persisted remotely',
-    };
+    // Cloudinary not configured — reject instead of silently dropping the file.
+    throw new ApiError(503, 'File storage is not configured. Please set CLOUDINARY_* environment variables.');
   }
 
   /**
-   * Upload multiple files.
+   * Upload multiple files concurrently (parallel, bounded by Multer's limit).
    */
   async uploadMultiple(files: Express.Multer.File[], folder = 'renthub') {
     if (!files || !files.length) throw new ApiError(400, 'No files uploaded');
-    const results = [];
-    for (const file of files) {
-      results.push(await this.uploadFile(file, folder));
-    }
+    const results = await Promise.all(files.map((file) => this.uploadFile(file, folder)));
     return results;
   }
 }
 
 export default new UploadService();
-

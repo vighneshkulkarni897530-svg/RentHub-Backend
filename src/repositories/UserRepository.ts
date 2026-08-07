@@ -38,6 +38,10 @@ class UserRepository extends BaseRepository<IUser> {
     return User.findById(id).exec();
   }
 
+  async findByIdWithPassword(id: string): Promise<IUser | null> {
+    return User.findById(id).select('+password').exec() as unknown as IUser | null;
+  }
+
   async listUsers(filter: FilterQuery<IUser> = {}, options: { page?: number; limit?: number; sort?: string } = {}) {
     const page = options.page || 1;
     const limit = options.limit || 20;
@@ -49,4 +53,3 @@ class UserRepository extends BaseRepository<IUser> {
 }
 
 export default new UserRepository();
-

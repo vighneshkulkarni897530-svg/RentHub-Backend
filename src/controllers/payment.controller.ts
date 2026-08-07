@@ -1,4 +1,4 @@
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import PaymentService from '../services/payment.service';
 import ApiResponse from '../utils/ApiResponse';
 import { asyncHandler } from '../utils/asyncHandler';
@@ -28,7 +28,17 @@ export class PaymentController {
     const earnings = await PaymentService.getEarnings(req.user!.id);
     res.status(200).json(ApiResponse.ok(earnings));
   });
+
+/**
+   * Razorpay webhook handler (no auth — signature verified in service).
+   * Uses the raw body buffer (express.raw) for signature verification.
+   */
+  webhook = asyncHandler(async (req: Request, res: Response) => {
+    const signature = req.get('X-Razorpay-Signature') || '';
+    const rawBody = Buffer.isBuffer(req.body) ? req.body.toString('utf8') : JSON.stringify(req.body);
+    const result = await PaymentService.handleWebhook(rawBody, signature);
+    res.status(200).json(ApiResponse.ok(result, 'Webhook processed'));
+  });
 }
 
 export default new PaymentController();
-

@@ -1,4 +1,4 @@
-import { FilterQuery, PopulateOptions } from 'mongoose';
+import { FilterQuery, PopulateOptions, Types } from 'mongoose';
 import Payment, { IPayment } from '../models/Payment';
 import BaseRepository from './BaseRepository';
 
@@ -49,12 +49,69 @@ class PaymentRepository extends BaseRepository<IPayment> {
     return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
   }
 
-  async sumRevenue(): Promise<number> {
+async sumRevenue(): Promise<number> {
     const result = await Payment.aggregate([
       { $match: { status: 'completed' } },
       { $group: { _id: null, total: { $sum: '$amount' } } },
     ]);
     return result.length ? result[0].total : 0;
+  }
+
+  /**
+   * Aggregation-based earnings summary for an owner.
+   * Returns total earnings, completed payment count, and a monthly breakdown.
+   * Avoids loading all payments into memory (N+1 / perf fix).
+   */
+  async getEarningsAggregation(ownerId: string) {
+    return Payment.aggregate([
+      { $match: { owner: new Types.ObjectId(ownerId), status: 'completed' } },
+      {
+        $facet: {
+          totals: [
+            {
+              $group: {
+                _id: null,
+                total: { $sum: { $ifNull: ['$netAmount', '$amount', 0] } },
+                count: { $sum: 1 },
+              },
+            },
+          ],
+          monthly: [
+            {
+              $group: {
+                _id: {
+                  year: { $year: { $ifNull: ['$createdAt', '$updatedAt', new Date()] } },
+                  month: { $month: { $ifNull: ['$createdAt', '$updatedAt', new Date()] } },
+                },
+                amount: { $sum: { $ifNull: ['$netAmount', '$amount', 0] } },
+                bookings: { $sum: 1 },
+              },
+            },
+            { $sort: { '_id.year': -1, '_id.month': -1 } },
+            {
+              $project: {
+                _id: 0,
+                month: {
+                  $let: {
+                    vars: { months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] },
+                    in: { $arrayElemAt: ['$$months', { $subtract: ['$_id.month', 1] }] },
+                  },
+                },
+                amount: 1,
+                bookings: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $project: {
+          total: { $ifNull: [{ $arrayElemAt: ['$totals.total', 0] }, 0] },
+          count: { $ifNull: [{ $arrayElemAt: ['$totals.count', 0] }, 0] },
+          monthly: 1,
+        },
+      },
+    ]);
   }
 }
 
