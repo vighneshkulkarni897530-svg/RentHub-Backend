@@ -1,20 +1,25 @@
 import mongoose from 'mongoose';
-import env from './env';
 import logger from './logger';
 
-/**
- * Connects to MongoDB (Atlas or local) via Mongoose.
- */
-export async function connectDB(): Promise<void> {
-  try {
-    mongoose.set('strictQuery', true);
-    const conn = await mongoose.connect(env.mongodbUri);
-    logger.info(`MongoDB connected: ${conn.connection.host}`);
-  } catch (error) {
-    logger.error(`MongoDB connection error: ${(error as Error).message}`);
-    throw error;
-  }
+const MONGODB_URI = process.env.MONGODB_URI;
+
+if (!MONGODB_URI) {
+  logger.error('MONGODB_URI is not defined in the environment variables.');
+  process.exit(1);
 }
 
-export default connectDB;
+const connectDB = async () => {
+  if (mongoose.connection.readyState >= 1) {
+    return;
+  }
 
+  try {
+    await mongoose.connect(MONGODB_URI);
+    logger.info('MongoDB connected successfully.');
+  } catch (error) {
+    logger.error('MongoDB connection error:', error);
+    process.exit(1);
+  }
+};
+
+export default connectDB;

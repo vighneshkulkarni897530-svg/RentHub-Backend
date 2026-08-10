@@ -1,54 +1,50 @@
-import http from 'http';
-import app from './app';
-import env from './config/env';
+import express, { Express, Request, Response } from 'express';
+import dotenv from 'dotenv';
+import cors from 'cors';
+import helmet from 'helmet';
+import morgan from 'morgan';
+import compression from 'compression';
+import mongoSanitize from 'express-mongo-sanitize';
+import cookieParser from 'cookie-parser';
+
+import connectDB from './config/db';
 import logger from './config/logger';
-import { connectDB } from './config/db';
-import { initSocket } from './socket';
-import { initSentry, setupGlobalSentry } from './config/sentry';
+import allRoutes from './routes';
 
-/**
- * Server bootstrap:
- * 1. Connect to MongoDB
- * 2. Initialize Socket.IO on the HTTP server
- * 3. Start listening
- */
-async function startServer() {
-  // Initialize Sentry (no-op if SENTRY_DSN not set)
-  initSentry();
-  setupGlobalSentry();
+dotenv.config();
 
-  try {
-    await connectDB();
-  } catch (error) {
-    logger.error(`Failed to connect to MongoDB: ${(error as Error).message}`);
-    logger.warn('Server will still start, but database-dependent features will fail until MongoDB is reachable.');
-  }
+const app: Express = express();
+const PORT = process.env.PORT || 5000;
 
-  const server = http.createServer(app);
+// Connect to Database
+connectDB();
 
-  // Initialize Socket.IO for real-time chat & notifications
-  initSocket(server);
+// Middleware
+app.use(cors({
+    origin: ['http://localhost:3000', 'http://localhost:3001'],
+    credentials: true,
+}));
+app.use(helmet());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(mongoSanitize());
+app.use(compression());
 
-  server.listen(env.port, () => {
-    logger.info(`🚀 RentHub API running in ${env.nodeEnv} mode`);
-    logger.info(`   Base URL: http://localhost:${env.port}/api/${env.apiVersion}`);
-    logger.info(`   Health:   http://localhost:${env.port}/api/${env.apiVersion}/health`);
-  });
-
-  // Graceful shutdown
-  const shutdown = async (signal: string) => {
-    logger.info(`${signal} received. Shutting down gracefully...`);
-    server.close(() => {
-      logger.info('HTTP server closed');
-      process.exit(0);
-    });
-    // Force exit after 10s
-    setTimeout(() => process.exit(1), 10000).unref();
-  };
-
-  process.on('SIGINT', () => void shutdown('SIGINT'));
-  process.on('SIGTERM', () => void shutdown('SIGTERM'));
+if (process.env.NODE_ENV === 'development') {
+    app.use(morgan('dev'));
 }
 
-void startServer();
+// Health check endpoint
+app.get('/api/v1/health', (req: Request, res: Response) => {
+    res.status(200).json({ status: 'UP' });
+});
 
+// API Routes
+app.use('/', allRoutes);
+
+app.listen(PORT, () => {
+    logger.info(`Server is running on port ${PORT}`);
+});
+
+export default app;
