@@ -154,6 +154,10 @@ userSchema.statics.isEmailTaken = async function (
   return Boolean(user);
 };
 
-export const User: IUserModel = mongoose.model<IUser, IUserModel>('User', userSchema);
+const User =
+  (mongoose.models.User as IUserModel) ||
+  mongoose.model<IUser, IUserModel>('User', userSchema);
+
+export { User };
 export default User;
 

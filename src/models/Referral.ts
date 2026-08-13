@@ -15,7 +15,9 @@ export interface IReferral extends Document {
 
 const referralSchema = new Schema<IReferral>(
   {
-    code: { type: String, required: true, unique: true, uppercase: true, trim: true, index: true },
+    // `unique: true` already creates an index — no need for `index: true` or a
+    // separate `referralSchema.index({ code: 1 })` (avoids duplicate index warning).
+    code: { type: String, required: true, unique: true, uppercase: true, trim: true },
     referrer: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
     referredUser: { type: Schema.Types.ObjectId, ref: 'User' },
     rewardPoints: { type: Number, default: 100 },
@@ -25,8 +27,10 @@ const referralSchema = new Schema<IReferral>(
   { timestamps: true }
 );
 
-referralSchema.index({ code: 1 });
 referralSchema.index({ referrer: 1, status: 1 });
 
-export const Referral = mongoose.model<IReferral>('Referral', referralSchema);
+// Safe model reuse — prevents OverwriteModelError on hot reload.
+export const Referral =
+  (mongoose.models.Referral as mongoose.Model<IReferral>) ||
+  mongoose.model<IReferral>('Referral', referralSchema);
 export default Referral;

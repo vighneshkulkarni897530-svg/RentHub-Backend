@@ -17,11 +17,12 @@ const router = Router();
 // Public routes
 router.get('/', validate({ query: listProductsQuerySchema }), ProductController.listProducts);
 router.get('/slug/:slug', validate({ params: productSlugParamsSchema }), ProductController.getProductBySlug);
+router.get('/:id', validate({ params: productIdParamsSchema }), ProductController.getProductById);
+router.get('/:id/availability', validate({ params: productIdParamsSchema }), ProductController.getAvailability);
 
 // Protected routes (owner/admin)
 router.use(authenticate);
 router.get('/my', ProductController.getOwnerProducts);
-router.get('/:id', validate({ params: productIdParamsSchema }), ProductController.getProductById);
 router.post(
   '/',
   authorize('owner', 'admin'),
@@ -49,11 +50,6 @@ router.post(
   validate({ params: productIdParamsSchema, body: availabilityBlockSchema }),
   ProductController.blockDates
 );
-router.get(
-  '/:id/availability',
-  validate({ params: productIdParamsSchema }),
-  ProductController.getAvailability
-);
 router.delete(
   '/:id/block/:blockId',
   authorize('owner', 'admin'),
@@ -61,4 +57,3 @@ router.delete(
 );
 
 export default router;
-
