@@ -3,6 +3,7 @@ import mongoose, { Schema, Document, Types } from 'mongoose';
 export type PriceUnit = 'hour' | 'day' | 'week' | 'month';
 export type ModerationStatus = 'approved' | 'pending' | 'rejected';
 export type ListingStatus = 'active' | 'inactive' | 'draft';
+export type ProductStatus = 'available' | 'rented' | 'sold';
 
 export interface IProduct extends Document {
   _id: Types.ObjectId;
@@ -35,6 +36,10 @@ export interface IProduct extends Document {
   totalRevenue: number;
   deliveryOptions: string[];
   cancellationPolicy: string;
+  saleEnabled: boolean;
+  salePrice: number | null;
+  purchaseCondition: string | null;
+  productStatus: ProductStatus;
 }
 
 const productLocationSchema = new Schema(
@@ -88,6 +93,14 @@ const productSchema = new Schema<IProduct>(
     totalRevenue: { type: Number, default: 0 },
     deliveryOptions: [{ type: String, enum: ['pickup', 'delivery', 'both'] }],
     cancellationPolicy: { type: String, default: 'flexible' },
+    saleEnabled: { type: Boolean, default: false },
+    salePrice: { type: Number, default: null, min: 0 },
+    purchaseCondition: { type: String, default: null, maxlength: 500 },
+    productStatus: {
+      type: String,
+      enum: ['available', 'rented', 'sold'],
+      default: 'available',
+    },
   },
   { timestamps: true }
 );

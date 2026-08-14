@@ -14,6 +14,7 @@ import userRoutes from './user.routes';
 import adminRoutes from './admin.routes';
 import uploadRoutes from './upload.routes';
 import aiRoutes from './ai.routes';
+import purchaseRoutes from './purchase.routes';
 
 const router = Router();
 
@@ -33,6 +34,7 @@ apiV1Router.use('/user', userRoutes);
 apiV1Router.use('/admin', adminRoutes);
 apiV1Router.use('/upload', uploadRoutes);
 apiV1Router.use('/ai', aiRoutes);
+apiV1Router.use('/purchases', purchaseRoutes);
 
 router.use('/api/v1', apiV1Router);
 

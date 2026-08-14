@@ -38,6 +38,8 @@ class ProductRepository extends BaseRepository<IProduct> {
         ? { rentalPrice: -1 }
         : options.sort === 'rating'
         ? { rating: -1 }
+        : options.sort === 'trending'
+        ? { isTrending: -1, bookingsCount: -1, rating: -1, createdAt: -1 }
         : options.sort === 'newest'
         ? { createdAt: -1 }
         : { createdAt: -1 };

@@ -7,7 +7,8 @@ export type NotificationType =
   | 'review'
   | 'system'
   | 'admin'
-  | 'promotion';
+  | 'promotion'
+  | 'purchase';
 
 export interface INotification extends Document {
   _id: Types.ObjectId;
@@ -26,7 +27,7 @@ const notificationSchema = new Schema<INotification>(
     user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     type: {
       type: String,
-      enum: ['booking', 'payment', 'message', 'review', 'system', 'admin', 'promotion'],
+      enum: ['booking', 'payment', 'message', 'review', 'system', 'admin', 'promotion', 'purchase'],
       default: 'system',
     },
     title: { type: String, required: true, trim: true },
@@ -43,4 +44,3 @@ notificationSchema.index({ user: 1, read: 1, createdAt: -1 });
 
 export const Notification = mongoose.model<INotification>('Notification', notificationSchema);
 export default Notification;
-

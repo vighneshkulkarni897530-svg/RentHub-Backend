@@ -84,8 +84,7 @@ const userSchema = new Schema<IUser>(
     avatar: {
       type: String,
       default: '',
-      set: (v: string) =>
-        v || `https://api.dicebear.com/7.x/avataaars/svg?seed=${Math.random()}`,
+      set: (v: string) => v || '/images/demo/avatar.svg',
     },
     phone: { type: String, default: '' },
     role: { type: String, enum: ['customer', 'owner', 'admin'], default: 'customer' },

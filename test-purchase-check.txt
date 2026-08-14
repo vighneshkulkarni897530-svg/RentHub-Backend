@@ -1,0 +1,158 @@
+﻿
+> renthub-backend@1.0.0 test
+> vitest run
+
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.10 [39m[90mD:/mini project/renthub-backend[39m
+
+ [32mΓ£ô[39m tests/unit/middleware/auth.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 36[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/services/delivery.service.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/services/ai/insights.service.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/services/booking.service.test.ts [2m([22m[2m21 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/services/auth.service.test.ts [2m([22m[2m26 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/utils/ai-text.test.ts [2m([22m[2m22 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/services/loyalty.service.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/services/user.service.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/utils/asyncHandler.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/utils/jwt.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [31mΓ¥»[39m tests/unit/services/product.service.test.ts [2m([22m[2m23 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 15[2mms[22m[39m
+       [32mΓ£ô[39m creates a product with images[32m 2[2mms[22m[39m
+       [32mΓ£ô[39m throws 404 when category not found[32m 1[2mms[22m[39m
+       [32mΓ£ô[39m appends suffix to duplicate slug[32m 0[2mms[22m[39m
+       [32mΓ£ô[39m updates own product[32m 0[2mms[22m[39m
+       [32mΓ£ô[39m throws 404 when not found[32m 0[2mms[22m[39m
+       [32mΓ£ô[39m throws 403 when not owner[32m 0[2mms[22m[39m
+       [32mΓ£ô[39m deletes own product[32m 1[2mms[22m[39m
+       [32mΓ£ô[39m throws 404 when not found[32m 0[2mms[22m[39m
+       [32mΓ£ô[39m throws 403 when not owner[32m 0[2mms[22m[39m
+[31m       [31m├ù[31m lists active approved products with filters[39m[32m 3[2mms[22m[39m
+       [32mΓ£ô[39m returns product by slug[32m 0[2mms[22m[39m
+       [32mΓ£ô[39m throws 404 when not found[32m 0[2mms[22m[39m
+       [32mΓ£ô[39m returns product by id[32m 0[2mms[22m[39m
+       [32mΓ£ô[39m throws 404 when not found[32m 0[2mms[22m[39m
+       [32mΓ£ô[39m returns owner products[32m 1[2mms[22m[39m
+       [32mΓ£ô[39m blocks dates for own product[32m 0[2mms[22m[39m
+       [32mΓ£ô[39m throws 409 on conflict[32m 0[2mms[22m[39m
+       [32mΓ£ô[39m throws 403 when not owner[32m 0[2mms[22m[39m
+       [32mΓ£ô[39m returns availability for product[32m 0[2mms[22m[39m
+       [32mΓ£ô[39m throws 404 when product not found[32m 0[2mms[22m[39m
+       [32mΓ£ô[39m removes own block[32m 0[2mms[22m[39m
+       [32mΓ£ô[39m throws 404 when block not found[32m 0[2mms[22m[39m
+       [32mΓ£ô[39m throws 403 when not owner[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/services/invoice.service.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/services/coupon.service.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/services/supportTicket.service.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/services/kyc.service.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/services/review.service.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/services/message.service.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/services/payment.service.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/middleware/errorHandler.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/services/ai/semantic.service.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/services/ai/search.service.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/services/report.service.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/services/admin.service.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 25[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/services/notification.service.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/services/wishlist.service.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/services/payout.service.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/services/ai/description.service.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [31mΓ¥»[39m tests/unit/services/category.service.test.ts [2m([22m[2m12 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[33m 20035[2mms[22m[39m
+       [32mΓ£ô[39m creates a category[32m 2[2mms[22m[39m
+       [32mΓ£ô[39m throws 409 when slug exists[32m 2[2mms[22m[39m
+       [32mΓ£ô[39m updates a category[32m 0[2mms[22m[39m
+       [32mΓ£ô[39m throws 404 when not found[32m 0[2mms[22m[39m
+       [32mΓ£ô[39m deletes a category[32m 1[2mms[22m[39m
+       [32mΓ£ô[39m throws 404 when not found[32m 0[2mms[22m[39m
+[31m       [31m├ù[31m lists active categories by default[39m[33m 10021[2mms[22m[39m
+[31m       [31m├ù[31m lists all categories when includeInactive[39m[33m 10002[2mms[22m[39m
+       [32mΓ£ô[39m returns category by slug[32m 2[2mms[22m[39m
+       [32mΓ£ô[39m throws 404 when not found[32m 1[2mms[22m[39m
+       [32mΓ£ô[39m returns category by id[32m 0[2mms[22m[39m
+       [32mΓ£ô[39m throws 404 when not found[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/middleware/validate.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 22[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/utils/slugify.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/services/ai/recommendation.service.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/services/owner.service.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/services/ai/image.service.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/services/notificationPreferences.service.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/services/damage.service.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/services/refund.service.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [31mΓ¥»[39m tests/unit/services/upload.service.test.ts [2m([22m[2m5 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 14[2mms[22m[39m
+       [32mΓ£ô[39m throws 400 when no file[32m 3[2mms[22m[39m
+[31m       [31m├ù[31m throws 503 when cloudinary not configured[39m[32m 8[2mms[22m[39m
+       [32mΓ£ô[39m uploads via cloudinary when configured and returns metadata[32m 1[2mms[22m[39m
+       [32mΓ£ô[39m throws 400 when no files[32m 0[2mms[22m[39m
+       [32mΓ£ô[39m uploads multiple files when cloudinary configured[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/services/ai/fraud.service.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/utils/ai-image.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/utils/errors.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/setup-check.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/services/ai/pricing.service.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32mΓ£ô[39m tests/minimal.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/middleware/upload.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32mΓ£ô[39m tests/global-test.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/middleware/notFound.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 4[2mms[22m[39m
+node.exe : 
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[31mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[39m[1m[41m Failed Tests 4 [49m[22m[31mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[39m
+
+[41m[1m FAIL [22m[49m tests/unit/services/category.service.test.ts[2m > [22mCategoryService[2m > [22mlistCategories[2m > 
+[22mlists active categories by default
+[41m[1m FAIL [22m[49m tests/unit/services/category.service.test.ts[2m > [22mCategoryService[2m > [22mlistCategories[2m > 
+[22mlists all categories when includeInactive
+[31m[1mMongooseError[22m: Operation `products.aggregate()` buffering timed out after 10000ms[39m
+[90m [2mΓ¥»[22m Timeout.<anonymous> node_modules/mongoose/lib/drivers/node-mongodb-native/collection.js:[2m187:23[22m[39m
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[1/4]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/services/product.service.test.ts[2m > [22mProductService[2m > [22mlistProducts[2m > 
+[22mlists active approved products with filters
+[31m[1mTypeError[22m: default.findBySlug is not a function[39m
+[36m [2mΓ¥»[22m ProductService.listProducts src/services/product.service.ts:[2m113:51[22m[39m
+    [90m111|[39m         filter[33m.[39mcategory [33m=[39m categoryValue[33m;[39m
+    [90m112|[39m       } [35melse[39m {
+    [90m113|[39m         const category = await CategoryRepository.findBySlug(categoryVΓÇª
+    [90m   |[39m                                                   [31m^[39m
+    [90m114|[39m         [35mif[39m (category) {
+    [90m115|[39m           filter[33m.[39mcategory [33m=[39m category[33m.[39m_id[33m;[39m
+[90m [2mΓ¥»[22m tests/unit/services/product.service.test.ts:[2m168:28[22m[39m
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[2/4]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/services/upload.service.test.ts[2m > [22mUploadService[2m > [22muploadFile[2m > [22mthrows 
+503 when cloudinary not configured
+[31m[1mAssertionError[22m: promise resolved "{ ΓÇª(5) }" instead of rejecting[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- Error {[39m
+[32m-   "message": "rejected promise",[39m
+[31m+ {[39m
+[31m+   "filename": "1786723280830-776817488.jpg",[39m
+[31m+   "mimetype": "image/jpeg",[39m
+[31m+   "publicId": "",[39m
+[31m+   "size": 1024,[39m
+[31m+   "url": "/uploads/1786723280830-776817488.jpg",[39m
+[2m  }[22m
+
+[36m [2mΓ¥»[22m tests/unit/services/upload.service.test.ts:[2m29:54[22m[39m
+    [90m 27|[39m
+    [90m 28|[39m     [34mit[39m([32m'throws 503 when cloudinary not configured'[39m[33m,[39m [35masync[39m () [33m=>[39m {
+    [90m 29|[39m       await expect(UploadService.uploadFile(mockFile)).rejects.toMatchΓÇª
+    [90m   |[39m                                                      [31m^[39m
+    [90m 30|[39m     })[33m;[39m
+    [90m 31|[39m
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[3/4]ΓÄ»[22m[39m
+
+
+[2m Test Files [22m [1m[31m3 failed[39m[22m[2m | [22m[1m[32m43 passed[39m[22m[90m (46)[39m
+[2m      Tests [22m [1m[31m4 failed[39m[22m[2m | [22m[1m[32m380 passed[39m[22m[90m (384)[39m
+[2m   Start at [22m 21:30:52
+[2m   Duration [22m 30.34s[2m (transform 685ms, setup 628ms, import 2.35s, tests 20.43s, environment 4ms)[22m
+

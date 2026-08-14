@@ -101,6 +101,8 @@ function mapTypeToCategory(type: NotificationType): string {
       return 'review';
     case 'promotion':
       return 'marketing';
+    case 'purchase':
+      return 'booking';
     case 'message':
     case 'system':
     case 'admin':
@@ -129,6 +131,22 @@ export async function notifyRefund(data: { userId: string; title: string; messag
   await createNotification({ userId: data.userId, type: 'payment', title: data.title, message: data.message, link: data.link });
 }
 
+// ============================================================
+// Purchase-related notifications
+// ============================================================
+
+export async function notifyPurchaseRequestCreated(data: { userId: string; title: string; message: string; link?: string }) {
+  await createNotification({ userId: data.userId, type: 'purchase', title: data.title, message: data.message, link: data.link });
+}
+
+export async function notifyPurchaseRequestUpdated(data: { userId: string; title: string; message: string; link?: string }) {
+  await createNotification({ userId: data.userId, type: 'purchase', title: data.title, message: data.message, link: data.link });
+}
+
+export async function notifyPurchaseCompleted(data: { userId: string; title: string; message: string; link?: string }) {
+  await createNotification({ userId: data.userId, type: 'purchase', title: data.title, message: data.message, link: data.link });
+}
+
 export default {
   createNotification,
   notifyBookingCreated,
@@ -136,4 +154,7 @@ export default {
   notifyDelivery,
   notifyPaymentReceived,
   notifyRefund,
+  notifyPurchaseRequestCreated,
+  notifyPurchaseRequestUpdated,
+  notifyPurchaseCompleted,
 };

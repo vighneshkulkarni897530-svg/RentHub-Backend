@@ -32,7 +32,7 @@ app.use(
         // Next.js inline scripts + fonts from Google Fonts
         styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
         fontSrc: ["'self'", 'https://fonts.gstatic.com', 'data:'],
-        imgSrc: ["'self'", 'data:', 'blob:', 'https://res.cloudinary.com', 'https://images.unsplash.com', 'https://api.dicebear.com'],
+        imgSrc: ["'self'", 'data:', 'blob:', 'https://res.cloudinary.com'],
         connectSrc: ["'self'", 'https://api.razorpay.com', 'https://checkout.razorpay.com'],
         objectSrc: ["'none'"],
         frameSrc: ["'self'", 'https://checkout.razorpay.com'],

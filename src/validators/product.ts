@@ -26,6 +26,9 @@ export const createProductSchema = z.object({
   tags: z.array(z.string()).optional(),
   deliveryOptions: z.array(z.enum(['pickup', 'delivery', 'both'])).optional(),
   cancellationPolicy: z.string().optional(),
+  saleEnabled: z.boolean().default(false),
+  salePrice: z.number().positive('Sale price must be positive').nullable().optional(),
+  purchaseCondition: z.string().max(500).nullable().optional(),
 });
 
 export const updateProductSchema = createProductSchema.partial();
@@ -47,7 +50,7 @@ export const listProductsQuerySchema = z.object({
   maxPrice: z.coerce.number().optional(),
   minRating: z.coerce.number().min(0).max(5).optional(),
   condition: z.enum(['new', 'like_new', 'good', 'fair', 'used']).optional(),
-  sort: z.enum(['price_asc', 'price_desc', 'rating', 'newest']).optional(),
+  sort: z.enum(['price_asc', 'price_desc', 'rating', 'newest', 'trending']).optional(),
   owner: z.string().optional(),
 });
 

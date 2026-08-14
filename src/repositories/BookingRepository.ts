@@ -1,12 +1,39 @@
 import { FilterQuery, PopulateOptions, Types } from 'mongoose';
 import Booking, { IBooking } from '../models/Booking';
 import BaseRepository from './BaseRepository';
+import PurchaseRequest from '../models/PurchaseRequest';
 
 const bookingPopulate: PopulateOptions[] = [
-  { path: 'product', select: 'title slug images rentalPrice priceUnit location' },
+  { path: 'product', select: 'title slug images rentalPrice priceUnit location saleEnabled salePrice purchaseCondition productStatus' },
   { path: 'renter', select: 'name avatar phone email rating' },
   { path: 'owner', select: 'name avatar phone email rating' },
 ];
+
+/** Attach the latest active purchase-request status to each booking. */
+async function attachPurchaseRequestStatus(bookings: IBooking[]): Promise<IBooking[]> {
+  if (!bookings.length) return bookings;
+  const bookingIds = bookings.map((b) => b._id as Types.ObjectId);
+  const requests = await PurchaseRequest.find({
+    rentalId: { $in: bookingIds },
+    status: { $in: ['pending', 'accepted', 'rejected'] },
+  })
+    .sort({ createdAt: -1 })
+    .exec();
+
+  const statusByBooking = new Map<string, string>();
+  for (const r of requests) {
+    const key = String(r.rentalId);
+    if (!statusByBooking.has(key)) statusByBooking.set(key, r.status);
+  }
+
+  return bookings.map((b) => {
+    const status = statusByBooking.get(String(b._id));
+    if (status) {
+      (b as any).purchaseRequestStatus = status;
+    }
+    return b;
+  });
+}
 
 class BookingRepository extends BaseRepository<IBooking> {
   constructor() {
@@ -14,7 +41,10 @@ class BookingRepository extends BaseRepository<IBooking> {
   }
 
   async findByIdPopulated(id: string): Promise<IBooking | null> {
-    return Booking.findById(id).populate(bookingPopulate).exec();
+    const booking = await Booking.findById(id).populate(bookingPopulate).exec();
+    if (!booking) return null;
+    const [withStatus] = await attachPurchaseRequestStatus([booking]);
+    return withStatus;
   }
 
   async findOverlapping(productId: string, startDate: Date, endDate: Date, excludeId?: string): Promise<IBooking[]> {
@@ -34,7 +64,9 @@ class BookingRepository extends BaseRepository<IBooking> {
   ) {
     const filter: FilterQuery<IBooking> = { renter: userId as unknown as Types.ObjectId };
     if (options.status) filter.status = options.status as IBooking['status'];
-    return this.paginate(filter, options);
+    const result = await this.paginate(filter, options);
+    result.data = await attachPurchaseRequestStatus(result.data);
+    return result;
   }
 
   async listForOwner(

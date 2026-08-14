@@ -1,0 +1,56 @@
+﻿
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.10 [39m[90mD:/mini project/renthub-backend[39m
+
+ [31mΓ¥»[39m tests/unit/services/product.service.test.ts [2m([22m[2m23 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 20[2mms[22m[39m
+       [32mΓ£ô[39m creates a product with images[32m 4[2mms[22m[39m
+       [32mΓ£ô[39m throws 404 when category not found[32m 1[2mms[22m[39m
+       [32mΓ£ô[39m appends suffix to duplicate slug[32m 0[2mms[22m[39m
+       [32mΓ£ô[39m updates own product[32m 0[2mms[22m[39m
+       [32mΓ£ô[39m throws 404 when not found[32m 0[2mms[22m[39m
+       [32mΓ£ô[39m throws 403 when not owner[32m 0[2mms[22m[39m
+       [32mΓ£ô[39m deletes own product[32m 1[2mms[22m[39m
+       [32mΓ£ô[39m throws 404 when not found[32m 0[2mms[22m[39m
+       [32mΓ£ô[39m throws 403 when not owner[32m 1[2mms[22m[39m
+[31m       [31m├ù[31m lists active approved products with filters[39m[32m 4[2mms[22m[39m
+       [32mΓ£ô[39m returns product by slug[32m 0[2mms[22m[39m
+       [32mΓ£ô[39m throws 404 when not found[32m 0[2mms[22m[39m
+       [32mΓ£ô[39m returns product by id[32m 0[2mms[22m[39m
+       [32mΓ£ô[39m throws 404 when not found[32m 0[2mms[22m[39m
+       [32mΓ£ô[39m returns owner products[32m 1[2mms[22m[39m
+       [32mΓ£ô[39m blocks dates for own product[32m 1[2mms[22m[39m
+       [32mΓ£ô[39m throws 409 on conflict[32m 1[2mms[22m[39m
+       [32mΓ£ô[39m throws 403 when not owner[32m 1[2mms[22m[39m
+       [32mΓ£ô[39m returns availability for product[32m 0[2mms[22m[39m
+       [32mΓ£ô[39m throws 404 when product not found[32m 0[2mms[22m[39m
+       [32mΓ£ô[39m removes own block[32m 0[2mms[22m[39m
+       [32mΓ£ô[39m throws 404 when block not found[32m 0[2mms[22m[39m
+       [32mΓ£ô[39m throws 403 when not owner[32m 0[2mms[22m[39m
+node.exe : 
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[31mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[39m[1m[41m Failed Tests 1 [49m[22m[31mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[39m
+
+[41m[1m FAIL [22m[49m tests/unit/services/product.service.test.ts[2m > [22mProductService[2m > [22mlistProducts[2m > [22mlists 
+active approved products with filters
+[31m[1mTypeError[22m: default.findBySlug is not a function[39m
+[36m [2mΓ¥»[22m ProductService.listProducts src/services/product.service.ts:[2m113:51[22m[39m
+    [90m111|[39m         filter[33m.[39mcategory [33m=[39m categoryValue[33m;[39m
+    [90m112|[39m       } [35melse[39m {
+    [90m113|[39m         const category = await CategoryRepository.findBySlug(categoryVΓÇª
+    [90m   |[39m                                                   [31m^[39m
+    [90m114|[39m         [35mif[39m (category) {
+    [90m115|[39m           filter[33m.[39mcategory [33m=[39m category[33m.[39m_id[33m;[39m
+[90m [2mΓ¥»[22m tests/unit/services/product.service.test.ts:[2m168:28[22m[39m
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[1/1]ΓÄ»[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m22 passed[39m[22m[90m (23)[39m
+[2m   Start at [22m 21:39:48
+[2m   Duration [22m 676ms[2m (transform 96ms, setup 70ms, import 374ms, tests 20ms, environment 0ms)[22m
+

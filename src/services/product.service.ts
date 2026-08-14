@@ -5,6 +5,15 @@ import CategoryRepository from '../repositories/CategoryRepository';
 import ProductAvailabilityRepository from '../repositories/ProductAvailabilityRepository';
 import ProductImageRepository from '../repositories/ProductImageRepository';
 import { CreateProductInput, UpdateProductInput } from '../validators/product';
+import { Types } from 'mongoose';
+
+/**
+ * Internal test/smoke products that must never appear in the public demo
+ * marketplace. This is defense-in-depth on top of the seed cleanup so that
+ * re-running smoke tests later cannot pollute the public listings again.
+ */
+const TEST_PRODUCT_PATTERN = /smoke test|test camera|^test product$/i;
+const TEST_SLUG_PATTERN = /test-product|test-camera|smoke-test/i;
 
 export class ProductService {
   async createProduct(ownerId: string, input: CreateProductInput, imageUrls: string[] = []) {
@@ -42,6 +51,10 @@ export class ProductService {
       slug,
       moderationStatus: 'pending',
       listingStatus: 'active',
+      saleEnabled: input.saleEnabled ?? false,
+      salePrice: input.salePrice ?? null,
+      purchaseCondition: input.purchaseCondition ?? null,
+      productStatus: 'available',
     });
 
     // Save individual image records
@@ -83,7 +96,29 @@ export class ProductService {
 
   async listProducts(filters: any) {
     const filter: Record<string, unknown> = { listingStatus: 'active', moderationStatus: 'approved' };
-    if (filters.category) filter.category = filters.category;
+
+    // Never surface internal test/smoke products in the public marketplace.
+    filter.$and = [
+      { title: { $not: TEST_PRODUCT_PATTERN } },
+      { slug: { $not: TEST_SLUG_PATTERN } },
+    ];
+
+    if (filters.category) {
+      // The frontend sends category slugs (e.g. "laptops", "gaming").
+      // Resolve to the category ObjectId if it is not already one.
+      const categoryValue = String(filters.category);
+      if (/^[0-9a-fA-F]{24}$/.test(categoryValue)) {
+        filter.category = categoryValue;
+      } else {
+        const category = await CategoryRepository.findBySlug(categoryValue);
+        if (category) {
+          filter.category = category._id;
+        } else {
+          // No matching category -> return an empty result.
+          filter.category = new Types.ObjectId('000000000000000000000000');
+        }
+      }
+    }
     if (filters.owner) filter.owner = filters.owner;
     if (filters.condition) filter.condition = filters.condition;
     if (filters.minPrice || filters.maxPrice) {

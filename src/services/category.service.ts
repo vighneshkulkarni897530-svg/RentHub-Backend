@@ -1,6 +1,7 @@
 import ApiError from '../utils/ApiError';
 import slugify from '../utils/slugify';
 import CategoryRepository from '../repositories/CategoryRepository';
+import Product from '../models/Product';
 import { CreateCategoryInput } from '../validators/category';
 
 export class CategoryService {
@@ -37,10 +38,25 @@ export class CategoryService {
   }
 
   async listCategories(includeInactive = false) {
-    if (includeInactive) {
-      return CategoryRepository.find({}, { sort: { name: 1 as 1 | -1 } });
-    }
-    return CategoryRepository.listActive();
+    const categories = includeInactive
+      ? await CategoryRepository.find({}, { sort: { name: 1 as 1 | -1 } })
+      : await CategoryRepository.listActive();
+
+    // Attach the real count of active, approved products per category.
+    const counts = await Product.aggregate([
+      { $match: { listingStatus: 'active', moderationStatus: 'approved' } },
+      { $group: { _id: '$category', count: { $sum: 1 } } },
+    ]).exec();
+    const countMap = new Map(counts.map((c) => [String(c._id), c.count as number]));
+
+    return (categories as any[]).map((cat) => {
+      const doc = cat.toObject ? cat.toObject() : cat;
+      return {
+        ...doc,
+        itemCount: countMap.get(String(doc._id)) || 0,
+        productCount: countMap.get(String(doc._id)) || 0,
+      };
+    });
   }
 
   async getBySlug(slug: string) {
