@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { isValidIndianPhone } from '../utils/phone';
 
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/;
 
@@ -12,7 +13,7 @@ export const registerSchema = z
       .regex(passwordRegex, 'Password must contain at least one uppercase letter, one lowercase letter, and one number'),
     confirmPassword: z.string().min(1, 'Please confirm your password'),
     role: z.enum(['customer', 'owner']).default('customer'),
-    phone: z.string().optional(),
+    phone: z.string().optional().refine((val) => !val || isValidIndianPhone(val), 'Please enter a valid Indian mobile number (10 digits starting with 6, 7, 8, or 9)'),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Passwords do not match',

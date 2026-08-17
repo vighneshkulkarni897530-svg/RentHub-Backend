@@ -1,8 +1,9 @@
 import { z } from 'zod';
+import { isValidIndianPhone } from '../utils/phone';
 
 export const updateProfileSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').max(50).optional(),
-  phone: z.string().min(10, 'Please enter a valid phone number').optional(),
+  phone: z.string().optional().refine((val) => !val || isValidIndianPhone(val), 'Please enter a valid Indian mobile number (10 digits starting with 6, 7, 8, or 9)'),
   avatar: z.string().url('Avatar must be a valid URL').optional(),
   location: z
     .object({

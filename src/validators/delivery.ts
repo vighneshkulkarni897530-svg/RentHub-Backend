@@ -1,8 +1,9 @@
 import { z } from 'zod';
+import { isValidIndianPhone } from '../utils/phone';
 
 export const createPartnerSchema = z.object({
   name: z.string().min(2).max(100),
-  phone: z.string().min(7).max(20),
+  phone: z.string().refine((val) => isValidIndianPhone(val), 'Please enter a valid Indian mobile number (10 digits starting with 6, 7, 8, or 9)'),
   email: z.string().email().optional(),
   vehicle: z.string().max(50).optional(),
   zones: z.array(z.string().max(50)).optional().default([]),
@@ -10,7 +11,7 @@ export const createPartnerSchema = z.object({
 
 export const updatePartnerSchema = z.object({
   name: z.string().min(2).max(100).optional(),
-  phone: z.string().min(7).max(20).optional(),
+  phone: z.string().optional().refine((val) => !val || isValidIndianPhone(val), 'Please enter a valid Indian mobile number (10 digits starting with 6, 7, 8, or 9)'),
   email: z.string().email().optional(),
   vehicle: z.string().max(50).optional(),
   zones: z.array(z.string().max(50)).optional(),
