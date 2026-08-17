@@ -4,6 +4,30 @@ export type BookingStatus = 'pending' | 'confirmed' | 'active' | 'completed' | '
 export type PaymentStatus = 'pending' | 'paid' | 'refunded' | 'failed';
 export type DeliveryOption = 'pickup' | 'delivery';
 export type DeliveryStatus = 'pending' | 'pickup_ready' | 'out_for_delivery' | 'delivered' | 'return_pickup' | 'returned' | 'cancelled';
+export type FulfillmentMethod = 'delivery' | 'pickup';
+
+export interface IDeliveryAddress {
+  fullName: string;
+  mobile: string;
+  address: string;
+  area: string;
+  city: string;
+  state: string;
+  pincode: string;
+  landmark?: string;
+  instructions?: string;
+}
+
+export interface IPickupLocation {
+  address: string;
+  area: string;
+  city: string;
+  state: string;
+  pincode: string;
+  landmark?: string;
+  instructions?: string;
+  contactNumber?: string;
+}
 
 export interface IBooking extends Document {
   _id: Types.ObjectId;
@@ -25,7 +49,10 @@ export interface IBooking extends Document {
   status: BookingStatus;
   paymentStatus: PaymentStatus;
   deliveryOption: DeliveryOption;
-  deliveryAddress?: string;
+  fulfillmentMethod: FulfillmentMethod;
+  deliveryAddress?: IDeliveryAddress;
+  pickupLocation?: IPickupLocation;
+  deliveryAddressString?: string;
   deliveryStatus: DeliveryStatus;
   deliveryPartner?: string;
   deliveryOtp?: string;
@@ -35,6 +62,35 @@ export interface IBooking extends Document {
   cancellationReason?: string;
   createdAt: Date;
 }
+
+const deliveryAddressSchema = new Schema(
+  {
+    fullName: { type: String, default: '' },
+    mobile: { type: String, default: '' },
+    address: { type: String, default: '' },
+    area: { type: String, default: '' },
+    city: { type: String, default: '' },
+    state: { type: String, default: '' },
+    pincode: { type: String, default: '' },
+    landmark: { type: String, default: '' },
+    instructions: { type: String, default: '' },
+  },
+  { _id: false }
+);
+
+const pickupLocationSchema = new Schema(
+  {
+    address: { type: String, default: '' },
+    area: { type: String, default: '' },
+    city: { type: String, default: '' },
+    state: { type: String, default: '' },
+    pincode: { type: String, default: '' },
+    landmark: { type: String, default: '' },
+    instructions: { type: String, default: '' },
+    contactNumber: { type: String, default: '' },
+  },
+  { _id: false }
+);
 
 const bookingSchema = new Schema<IBooking>(
   {
@@ -64,7 +120,10 @@ const bookingSchema = new Schema<IBooking>(
       default: 'pending',
     },
     deliveryOption: { type: String, enum: ['pickup', 'delivery'], default: 'pickup' },
-    deliveryAddress: { type: String },
+    fulfillmentMethod: { type: String, enum: ['delivery', 'pickup'], default: 'pickup' },
+    deliveryAddress: { type: deliveryAddressSchema, default: () => ({}) },
+    pickupLocation: { type: pickupLocationSchema, default: () => ({}) },
+    deliveryAddressString: { type: String },
     deliveryStatus: {
       type: String,
       enum: ['pending', 'pickup_ready', 'out_for_delivery', 'delivered', 'return_pickup', 'returned', 'cancelled'],
@@ -96,4 +155,3 @@ bookingSchema.index({ owner: 1, status: 1 });
 
 export const Booking = mongoose.model<IBooking>('Booking', bookingSchema);
 export default Booking;
-

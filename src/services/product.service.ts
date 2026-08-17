@@ -41,6 +41,7 @@ export class ProductService {
         zip: '',
         coordinates: { lat: 0, lng: 0 },
       }) as any,
+      pickupLocation: (input.pickupLocation || {}) as any,
       rentalPrice: input.rentalPrice,
       priceUnit: input.priceUnit,
       securityDeposit: input.securityDeposit,

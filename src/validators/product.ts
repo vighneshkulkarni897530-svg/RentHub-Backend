@@ -13,12 +13,24 @@ const locationSchema = z.object({
     .optional(),
 });
 
+const pickupLocationSchema = z.object({
+  address: z.string().min(1, 'Pickup address is required').max(500),
+  area: z.string().min(1, 'Area is required').max(200),
+  city: z.string().min(1, 'City is required').max(100),
+  state: z.string().min(1, 'State is required').max(100),
+  pincode: z.string().regex(/^\d{6}$/, 'Pincode must be exactly 6 digits'),
+  landmark: z.string().max(200).optional(),
+  instructions: z.string().max(500).optional(),
+  contactNumber: z.string().max(15).optional(),
+});
+
 export const createProductSchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters').max(200),
   description: z.string().min(20, 'Description must be at least 20 characters').max(5000),
   category: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid category id'),
   condition: z.enum(['new', 'like_new', 'good', 'fair', 'used']).default('good'),
   location: locationSchema.optional(),
+  pickupLocation: pickupLocationSchema.optional(),
   rentalPrice: z.number().positive('Rental price must be positive'),
   priceUnit: z.enum(['hour', 'day', 'week', 'month']).default('day'),
   securityDeposit: z.number().nonnegative().default(0),

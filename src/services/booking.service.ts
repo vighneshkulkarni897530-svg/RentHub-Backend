@@ -8,6 +8,9 @@ import { CreateBookingInput } from '../validators/booking';
 
 const PLATFORM_FEE_PERCENT = 0.1; // 10%
 
+// Simple configurable delivery fee (₹). Backend is the source of truth.
+const DEFAULT_DELIVERY_FEE = 100;
+
 export class BookingService {
   async createBooking(renterId: string, input: CreateBookingInput) {
     const product = await ProductRepository.findById(input.product);
@@ -33,8 +36,49 @@ export class BookingService {
       throw new ApiError(409, 'Product is unavailable for the selected dates');
     }
 
+    // ============================================================
+    // FULFILLMENT METHOD (delivery | pickup)
+    // ============================================================
+    // The backend is the SOURCE OF TRUTH for the fulfillment method.
+    // - For DELIVERY: the renter submits their own delivery address.
+    // - For PICKUP: the pickup location is taken from the actual
+    //   Product (owner) record — NEVER from req.body.pickupLocation.
+    // A renter must NOT be able to change the owner's pickup location.
+    // ============================================================
+    const fulfillmentMethod = input.fulfillmentMethod || input.deliveryOption || 'pickup';
+
+    let deliveryFee = 0;
+    let deliveryAddress = input.deliveryAddress;
+    let pickupLocation;
+
+    if (fulfillmentMethod === 'delivery') {
+      // Configurable delivery fee from backend (no external maps API).
+      deliveryFee = Number(process.env.DELIVERY_FEE) || DEFAULT_DELIVERY_FEE;
+      if (!deliveryAddress || !deliveryAddress.address || !deliveryAddress.city || !deliveryAddress.state || !deliveryAddress.pincode) {
+        throw new ApiError(400, 'A complete delivery address is required for delivery bookings');
+      }
+    } else {
+      // PICKUP: retrieve the owner's pickup location from the actual product record.
+      // The renter can never supply/override the owner's pickup location.
+      const productPickup = (product as any).pickupLocation;
+      if (!productPickup || !productPickup.address || !productPickup.city || !productPickup.state || !productPickup.pincode) {
+        throw new ApiError(400, 'This owner has not configured a pickup location. Please choose delivery or contact the owner.');
+      }
+      pickupLocation = {
+        address: productPickup.address || '',
+        area: productPickup.area || '',
+        city: productPickup.city || '',
+        state: productPickup.state || '',
+        pincode: productPickup.pincode || '',
+        landmark: productPickup.landmark || '',
+        instructions: productPickup.instructions || '',
+        contactNumber: productPickup.contactNumber || '',
+      };
+      deliveryFee = 0;
+    }
+
     const platformFee = Math.round(input.totalPrice * PLATFORM_FEE_PERCENT * 100) / 100;
-    const grandTotal = Math.round((input.totalPrice + platformFee + (input.deliveryFee || 0)) * 100) / 100;
+    const grandTotal = Math.round((input.totalPrice + platformFee + deliveryFee) * 100) / 100;
 
     let couponCode: string | undefined;
     let couponDiscount = 0;
@@ -62,14 +106,19 @@ export class BookingService {
       durationUnit: input.durationUnit,
       totalPrice: input.totalPrice,
       securityDeposit: input.securityDeposit || product.securityDeposit,
-      deliveryFee: input.deliveryFee || 0,
+      deliveryFee,
       platformFee,
       couponCode,
       couponDiscount,
       couponType,
-      grandTotal: Math.round((input.totalPrice - couponDiscount + platformFee + (input.deliveryFee || 0)) * 100) / 100,
-      deliveryOption: input.deliveryOption,
-      deliveryAddress: input.deliveryAddress,
+      grandTotal: Math.round((input.totalPrice - couponDiscount + platformFee + deliveryFee) * 100) / 100,
+      deliveryOption: fulfillmentMethod,
+      fulfillmentMethod,
+      deliveryAddress: fulfillmentMethod === 'delivery' ? deliveryAddress : undefined,
+      pickupLocation: fulfillmentMethod === 'pickup' ? pickupLocation : undefined,
+      deliveryAddressString: fulfillmentMethod === 'delivery' && deliveryAddress
+        ? `${deliveryAddress.address}, ${deliveryAddress.area}, ${deliveryAddress.city}, ${deliveryAddress.state} ${deliveryAddress.pincode}`.trim()
+        : undefined,
       notes: input.notes,
       status: 'pending',
       paymentStatus: 'pending',

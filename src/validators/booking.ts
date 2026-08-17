@@ -1,5 +1,28 @@
 import { z } from 'zod';
 
+const deliveryAddressSchema = z.object({
+  fullName: z.string().min(1, 'Full name is required').max(100),
+  mobile: z.string().min(10, 'Mobile number is required').max(15),
+  address: z.string().min(1, 'Address is required').max(500),
+  area: z.string().min(1, 'Area is required').max(200),
+  city: z.string().min(1, 'City is required').max(100),
+  state: z.string().min(1, 'State is required').max(100),
+  pincode: z.string().regex(/^\d{6}$/, 'Pincode must be exactly 6 digits'),
+  landmark: z.string().max(200).optional(),
+  instructions: z.string().max(500).optional(),
+});
+
+const pickupLocationSchema = z.object({
+  address: z.string().min(1, 'Pickup address is required').max(500),
+  area: z.string().min(1, 'Area is required').max(200),
+  city: z.string().min(1, 'City is required').max(100),
+  state: z.string().min(1, 'State is required').max(100),
+  pincode: z.string().regex(/^\d{6}$/, 'Pincode must be exactly 6 digits'),
+  landmark: z.string().max(200).optional(),
+  instructions: z.string().max(500).optional(),
+  contactNumber: z.string().max(15).optional(),
+});
+
 export const createBookingSchema = z.object({
   product: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid product id'),
   startDate: z.string().or(z.date()),
@@ -9,7 +32,10 @@ export const createBookingSchema = z.object({
   totalPrice: z.number().nonnegative(),
   securityDeposit: z.number().nonnegative().optional(),
   deliveryOption: z.enum(['pickup', 'delivery']).default('pickup'),
-  deliveryAddress: z.string().max(500).optional(),
+  fulfillmentMethod: z.enum(['delivery', 'pickup']).default('pickup'),
+  deliveryAddress: deliveryAddressSchema.optional(),
+  pickupLocation: pickupLocationSchema.optional(),
+  deliveryAddressString: z.string().max(500).optional(),
   deliveryFee: z.number().nonnegative().default(0).optional(),
   notes: z.string().max(500).optional(),
   couponCode: z.string().trim().min(3).max(20).optional(),
@@ -43,4 +69,3 @@ export const listBookingsQuerySchema = z.object({
 });
 
 export type CreateBookingInput = z.infer<typeof createBookingSchema>;
-

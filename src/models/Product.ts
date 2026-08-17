@@ -5,6 +5,17 @@ export type ModerationStatus = 'approved' | 'pending' | 'rejected';
 export type ListingStatus = 'active' | 'inactive' | 'draft';
 export type ProductStatus = 'available' | 'rented' | 'sold';
 
+export interface IPickupLocation {
+  address: string;
+  area: string;
+  city: string;
+  state: string;
+  pincode: string;
+  landmark?: string;
+  instructions?: string;
+  contactNumber?: string;
+}
+
 export interface IProduct extends Document {
   _id: Types.ObjectId;
   title: string;
@@ -21,6 +32,7 @@ export interface IProduct extends Document {
     zip: string;
     coordinates: { lat: number; lng: number };
   };
+  pickupLocation?: IPickupLocation;
   rentalPrice: number;
   priceUnit: PriceUnit;
   securityDeposit: number;
@@ -56,6 +68,20 @@ const productLocationSchema = new Schema(
   { _id: false }
 );
 
+const pickupLocationSchema = new Schema(
+  {
+    address: { type: String, default: '' },
+    area: { type: String, default: '' },
+    city: { type: String, default: '' },
+    state: { type: String, default: '' },
+    pincode: { type: String, default: '' },
+    landmark: { type: String, default: '' },
+    instructions: { type: String, default: '' },
+    contactNumber: { type: String, default: '' },
+  },
+  { _id: false }
+);
+
 const productSchema = new Schema<IProduct>(
   {
     title: { type: String, required: true, trim: true, maxlength: 200 },
@@ -70,6 +96,7 @@ const productSchema = new Schema<IProduct>(
       default: 'good',
     },
     location: { type: productLocationSchema, default: () => ({}) },
+    pickupLocation: { type: pickupLocationSchema, default: () => ({}) },
     rentalPrice: { type: Number, required: true, min: 0 },
     priceUnit: { type: String, enum: ['hour', 'day', 'week', 'month'], default: 'day' },
     securityDeposit: { type: Number, default: 0, min: 0 },
@@ -111,4 +138,3 @@ productSchema.index({ owner: 1, listingStatus: 1 });
 
 export const Product = mongoose.model<IProduct>('Product', productSchema);
 export default Product;
-
