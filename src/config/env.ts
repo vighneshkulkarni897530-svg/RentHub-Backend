@@ -70,6 +70,13 @@ const env = {
 
   sentryDsn: process.env.SENTRY_DSN || '',
   sentryTracesSampleRate: parseFloat(process.env.SENTRY_TRACES_SAMPLE_RATE || '0.1'),
+
+  // ---------- Ollama (local AI) ----------
+  ollama: {
+    baseUrl: process.env.OLLAMA_BASE_URL || 'http://localhost:11434',
+    model: process.env.OLLAMA_MODEL || 'llama3.2',
+    timeoutMs: parseInt(process.env.OLLAMA_TIMEOUT_MS || '30000', 10),
+  },
 } as const;
 
 export default env;

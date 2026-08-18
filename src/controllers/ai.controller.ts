@@ -10,8 +10,21 @@ import descriptionService from '../services/ai/description.service';
 import imageAnalysisService from '../services/ai/image.service';
 import fraudService from '../services/ai/fraud.service';
 import insightsService from '../services/ai/insights.service';
+import { handleAssistantRequest } from '../services/ai/assistant';
 
 export class AIController {
+  // ================= VOICE ASSISTANT =================
+  assistant = asyncHandler(async (req: AuthRequest, res: Response) => {
+    const result = await handleAssistantRequest(
+      {
+        message: req.body.message,
+        conversationId: req.body.conversationId,
+        context: req.body.context,
+      },
+      req.user ? { id: req.user.id, role: req.user.role } : undefined
+    );
+    res.status(200).json(ApiResponse.ok(result.data, result.success ? undefined : result.data.message));
+  });
   // ================= SEARCH =================
   semanticSearch = asyncHandler(async (req: AuthRequest, res: Response) => {
     const query = String(req.query.q || '');
