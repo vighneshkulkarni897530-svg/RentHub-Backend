@@ -75,7 +75,9 @@ const env = {
   ollama: {
     baseUrl: process.env.OLLAMA_BASE_URL || 'http://localhost:11434',
     model: process.env.OLLAMA_MODEL || 'llama3.2',
-    timeoutMs: parseInt(process.env.OLLAMA_TIMEOUT_MS || '30000', 10),
+    // llama3.2 with the full RentHub system prompt can take 20-60s on CPU.
+    // Use a generous timeout so the model has time to generate structured JSON.
+    timeoutMs: parseInt(process.env.OLLAMA_TIMEOUT_MS || '120000', 10),
   },
 } as const;
 

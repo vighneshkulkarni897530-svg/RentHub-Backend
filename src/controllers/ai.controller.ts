@@ -11,6 +11,8 @@ import imageAnalysisService from '../services/ai/image.service';
 import fraudService from '../services/ai/fraud.service';
 import insightsService from '../services/ai/insights.service';
 import { handleAssistantRequest } from '../services/ai/assistant';
+import { checkOllamaHealth } from '../services/ai/assistant/ollamaClient';
+import env from '../config/env';
 
 export class AIController {
   // ================= VOICE ASSISTANT =================
@@ -24,6 +26,20 @@ export class AIController {
       req.user ? { id: req.user.id, role: req.user.role } : undefined
     );
     res.status(200).json(ApiResponse.ok(result.data, result.success ? undefined : result.data.message));
+  });
+
+  // ================= AI HEALTH CHECK =================
+  health = asyncHandler(async (_req: AuthRequest, res: Response) => {
+    const health = await checkOllamaHealth();
+    res.status(200).json(
+      ApiResponse.ok({
+        ollamaReachable: health.ok,
+        model: env.ollama.model,
+        baseUrl: env.ollama.baseUrl,
+        ready: health.ok,
+        error: health.error || null,
+      })
+    );
   });
   // ================= SEARCH =================
   semanticSearch = asyncHandler(async (req: AuthRequest, res: Response) => {

@@ -49,6 +49,9 @@ export async function checkOllamaHealth(): Promise<{ ok: boolean; error?: string
     if (!installed) {
       return { ok: false, error: `Model "${modelName}" is not installed. Run: ollama pull ${modelName}` };
     }
+    logger.info(`Ollama connection: OK`);
+    logger.info(`Ollama URL: ${env.ollama.baseUrl}`);
+    logger.info(`Ollama model: ${modelName}`);
     return { ok: true };
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error';

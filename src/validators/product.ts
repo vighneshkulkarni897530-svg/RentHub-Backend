@@ -58,10 +58,15 @@ export const listProductsQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).default(20),
   category: z.string().optional(),
   search: z.string().optional(),
+  location: z.string().optional(),
   minPrice: z.coerce.number().optional(),
   maxPrice: z.coerce.number().optional(),
   minRating: z.coerce.number().min(0).max(5).optional(),
-  condition: z.enum(['new', 'like_new', 'good', 'fair', 'used']).optional(),
+  // Accept the stored snake_case enum AND the display values used by the
+  // frontend filter sidebar ("New", "Like New", "Good", "Fair"). The
+  // service normalizes display values to the stored enum before querying.
+  condition: z.string().optional(),
+  availability: z.string().optional(),
   sort: z.enum(['price_asc', 'price_desc', 'rating', 'newest', 'trending']).optional(),
   owner: z.string().optional(),
 });

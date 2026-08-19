@@ -8,6 +8,9 @@ const router = Router();
 // ---- AI Voice Assistant (public; auth optional) ----
 router.post('/assistant', AIController.assistant);
 
+// ---- AI Health Check (development-only) ----
+router.get('/health', AIController.health);
+
 // ---- Public AI endpoints (search intelligence, recommendations, pricing, description) ----
 
 // Search intelligence

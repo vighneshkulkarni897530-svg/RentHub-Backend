@@ -1,11 +1,15 @@
-// ============================================================
-// RentHub AI Assistant - System Prompt
-// ============================================================
-// This prompt is sent to Ollama to guide the model into
-// returning strict structured JSON matching the intent schema.
-// ============================================================
+import urllib.request, json, time
 
-export const AI_SYSTEM_PROMPT = `You are RentHub AI Assistant.
+# Read the actual system prompt from the backend
+import sys
+sys.path.insert(0, 'renthub-backend/src')
+# Can't easily import TS, so let's just use a representative prompt
+
+start = time.time()
+body = {
+    'model': 'llama3.2',
+    'messages': [
+        {'role': 'system', 'content': '''You are RentHub AI Assistant.
 
 RentHub is an Indian rental and purchase marketplace.
 Currency = INR (Indian Rupees). Never use USD, EUR, GBP, AED, CAD, or AUD.
@@ -65,9 +69,9 @@ VIEW_ADMIN_DASHBOARD, VIEW_HELP, TRACK_RENTAL, CHECK_DEPOSIT,
 CHECK_DELIVERY, CHECK_PICKUP, CANCEL_ACTION, UNKNOWN
 
 Rules:
-- "I need a camera" → SEARCH_PRODUCTS, category=camera, mode=rent, requiresLogin=false
-- "Show me laptops" → SEARCH_PRODUCTS, category=laptop, mode=rent, requiresLogin=false
-- "I want to buy a MacBook" → SEARCH_PRODUCTS, product=MacBook, mode=buy, requiresLogin=false
+- "I need a camera" → SEARCH_PRODUCTS, category=camera, mode=rent
+- "Show me laptops" → SEARCH_PRODUCTS, category=laptop, mode=rent
+- "I want to buy a MacBook" → SEARCH_PRODUCTS, product=MacBook, mode=buy
 - "Rent this laptop" → RENT_PRODUCT, product=laptop, requiresLogin=true
 - "Buy this laptop" → BUY_PRODUCT, product=laptop, requiresLogin=true, requiresConfirmation=true
 - "I am renting this laptop and want to buy it" → ASK_OWNER_TO_BUY, product=laptop, requiresLogin=true
@@ -77,12 +81,12 @@ Rules:
 - "Add a new listing" → ADD_LISTING, requiresLogin=true
 - "Show my sales" → VIEW_OWNER_SALES, requiresLogin=true
 - "Open admin dashboard" → VIEW_ADMIN_DASHBOARD, requiresLogin=true
-- "Show me something under 500 rupees a day" → SEARCH_PRODUCTS, maxPrice=500, priceUnit=day, requiresLogin=false
-- "I need something for 3 days and delivery" → SEARCH_PRODUCTS, duration=3, fulfillmentMethod=delivery, requiresLogin=false
-- "Show products near me" → SEARCH_PRODUCTS, location=user's city if known, otherwise null, requiresLogin=false
-- "What's available in Pune?" → SEARCH_PRODUCTS, location=Pune, requiresLogin=false
-- "I want delivery" → SEARCH_PRODUCTS, fulfillmentMethod=delivery, requiresLogin=false
-- "I'll pick it up myself" → SEARCH_PRODUCTS, fulfillmentMethod=pickup, requiresLogin=false
+- "Show me something under 500 rupees a day" → SEARCH_PRODUCTS, maxPrice=500, priceUnit=day
+- "I need something for 3 days and delivery" → SEARCH_PRODUCTS, duration=3, fulfillmentMethod=delivery
+- "Show products near me" → SEARCH_PRODUCTS, location=user's city if known, otherwise null
+- "What's available in Pune?" → SEARCH_PRODUCTS, location=Pune
+- "I want delivery" → SEARCH_PRODUCTS, fulfillmentMethod=delivery
+- "I'll pick it up myself" → SEARCH_PRODUCTS, fulfillmentMethod=pickup
 
 Price normalization (always INR):
 - ₹500, 500 rupees, 500 rs, Rs 500, 500 INR → maxPrice=500
@@ -100,45 +104,15 @@ Duration:
 If information is missing, set the field to null and ask the user in the message field.
 If the user's request is ambiguous, set intent=UNKNOWN and ask for clarification in the message field.
 If the user is not logged in and requests a protected action, set requiresLogin=true.
-Never set requiresConfirmation=true for search or navigation intents. Only for purchase/rental confirmation flows.`;
-
-/**
- * Build the user message with conversation context.
- */
-export function buildUserMessage(
-  userText: string,
-  context: {
-    currentPath?: string;
-    selectedProductId?: string | null;
-    userRole?: string | null;
-    isAuthenticated?: boolean;
-    conversationHistory?: { role: 'user' | 'assistant'; content: string }[];
-  }
-): string {
-  const parts: string[] = [];
-
-  parts.push(`User request: "${userText}"`);
-
-  if (context.currentPath) {
-    parts.push(`Current page: ${context.currentPath}`);
-  }
-  if (context.selectedProductId) {
-    parts.push(`Selected product ID: ${context.selectedProductId}`);
-  }
-  if (context.isAuthenticated) {
-    parts.push(`User is logged in. Role: ${context.userRole || 'customer'}`);
-  } else {
-    parts.push('User is NOT logged in (guest).');
-  }
-
-  if (context.conversationHistory && context.conversationHistory.length > 0) {
-    parts.push('Conversation history:');
-    context.conversationHistory.forEach((m) => {
-      parts.push(`${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content}`);
-    });
-  }
-
-  parts.push('Return ONLY the JSON object matching the schema. No other text.');
-
-  return parts.join('\n');
+Never set requiresConfirmation=true for search or navigation intents. Only for purchase/rental confirmation flows.''',
+        'role': 'system'},
+        {'role': 'user', 'content': 'User request: "I want a camera"\nCurrent page: /\nUser is NOT logged in (guest).\nReturn ONLY the JSON object matching the schema. No other text.'}
+    ],
+    'stream': False,
+    'options': {'temperature': 0.2, 'num_predict': 1024}
 }
+req = urllib.request.Request('http://127.0.0.1:11434/api/chat', data=json.dumps(body).encode(), headers={'Content-Type': 'application/json'})
+resp = urllib.request.urlopen(req, timeout=120)
+elapsed = time.time() - start
+print(f'Elapsed: {elapsed:.1f}s')
+print(resp.read().decode()[:1000])

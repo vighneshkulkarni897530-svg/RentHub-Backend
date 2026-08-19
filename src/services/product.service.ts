@@ -1,4 +1,4 @@
-import ApiError from '../utils/ApiError';
+   import ApiError from '../utils/ApiError';
 import slugify from '../utils/slugify';
 import ProductRepository from '../repositories/ProductRepository';
 import CategoryRepository from '../repositories/CategoryRepository';
@@ -121,7 +121,23 @@ export class ProductService {
       }
     }
     if (filters.owner) filter.owner = filters.owner;
-    if (filters.condition) filter.condition = filters.condition;
+
+    // Normalize display conditions ("Like New") to the stored snake_case
+    // enum values ("like_new").
+    if (filters.condition) {
+      const conditionValue = String(filters.condition).toLowerCase().replace(/[^a-z]+/g, '_');
+      const normalMap: Record<string, string> = {
+        'new': 'new',
+        'like_new': 'like_new',
+        'good': 'good',
+        'fair': 'fair',
+        'used': 'used',
+      };
+      if (normalMap[conditionValue]) {
+        filter.condition = normalMap[conditionValue];
+      }
+    }
+
     if (filters.minPrice || filters.maxPrice) {
       const priceRange: Record<string, number> = {};
       if (filters.minPrice) priceRange.$gte = Number(filters.minPrice);
@@ -129,6 +145,36 @@ export class ProductService {
       filter.rentalPrice = priceRange;
     }
     if (filters.minRating) filter.rating = { $gte: Number(filters.minRating) };
+
+    // Location: match against city or state (case-insensitive substring).
+    if (filters.location) {
+      const locationValue = String(filters.location).trim();
+      if (locationValue) {
+        filter.$and = [
+          ...(Array.isArray(filter.$and) ? filter.$and : []),
+          {
+            $or: [
+              { 'location.city': { $regex: locationValue, $options: 'i' } },
+              { 'location.state': { $regex: locationValue, $options: 'i' } },
+              { 'location.address': { $regex: locationValue, $options: 'i' } },
+              { 'location.zip': { $regex: locationValue, $options: 'i' } },
+            ],
+          },
+        ];
+      }
+    }
+
+    // Availability: 'available' => not sold (rentable), 'rented' => currently rented.
+    // The Product schema has no embedded availability object; the authoritative
+    // field is productStatus ('available' | 'rented' | 'sold').
+    if (filters.availability && filters.availability !== 'all') {
+      const availabilityValue = String(filters.availability).toLowerCase();
+      if (availabilityValue === 'available') {
+        filter.productStatus = 'available';
+      } else if (availabilityValue === 'rented') {
+        filter.productStatus = 'rented';
+      }
+    }
 
     const result = await ProductRepository.listProducts(filter, {
       page: filters.page,
