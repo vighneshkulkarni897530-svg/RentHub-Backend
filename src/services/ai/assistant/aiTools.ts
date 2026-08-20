@@ -39,6 +39,7 @@ function buildSearchUrl(intent: AIAssistantIntent): string {
   if (intent.maxPrice != null) params.set('maxPrice', String(intent.maxPrice));
   if (intent.minPrice != null) params.set('minPrice', String(intent.minPrice));
   if (intent.sort) params.set('sort', intent.sort);
+  if (intent.fulfillmentMethod) params.set('delivery', intent.fulfillmentMethod);
   const qs = params.toString();
   return qs ? `/public/search?${qs}` : '/public/search';
 }
@@ -76,6 +77,7 @@ async function searchProducts(intent: AIAssistantIntent, _ctx: ToolContext): Pro
   if (intent.location) filters.location = intent.location;
   if (intent.maxPrice != null) filters.maxPrice = intent.maxPrice;
   if (intent.minPrice != null) filters.minPrice = intent.minPrice;
+  if (intent.fulfillmentMethod) filters.delivery = intent.fulfillmentMethod;
 
   const result = await ProductService.listProducts(filters);
   const products = result?.data ?? [];

@@ -10,7 +10,7 @@ class CategoryRepository extends BaseRepository<ICategory> {
     return Category.findOne({ slug }).exec();
   }
 
-  async findByName(name: string): Promise<ICategory | null> {
+  async findByName(name: string | RegExp): Promise<ICategory | null> {
     return Category.findOne({ name }).exec();
   }
 
@@ -20,4 +20,3 @@ class CategoryRepository extends BaseRepository<ICategory> {
 }
 
 export default new CategoryRepository();
-

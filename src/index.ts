@@ -28,7 +28,21 @@ app.use(cors({
     origin: ['http://localhost:3000', 'http://localhost:3001'],
     credentials: true,
 }));
-app.use(helmet());
+// helmet with custom Permissions-Policy so the AI Voice Assistant
+// can use the browser Web Speech API (microphone) for voice input.
+app.use(
+    helmet({
+        contentSecurityPolicy: false,
+        crossOriginEmbedderPolicy: false,
+    })
+);
+app.use((_req: Request, res: Response, next: () => void) => {
+    res.setHeader(
+        'Permissions-Policy',
+        'camera=(), microphone=(self), geolocation=(self), payment=(self "https://checkout.razorpay.com"), usb=(), battery=()'
+    );
+    next();
+});
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());

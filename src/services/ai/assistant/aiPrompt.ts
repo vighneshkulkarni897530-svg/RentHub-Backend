@@ -66,8 +66,13 @@ CHECK_DELIVERY, CHECK_PICKUP, CANCEL_ACTION, UNKNOWN
 
 Rules:
 - "I need a camera" → SEARCH_PRODUCTS, category=camera, mode=rent, requiresLogin=false
+- "I want a camera" → SEARCH_PRODUCTS, category=camera, mode=rent, requiresLogin=false
+- "I want the best camera" → SEARCH_PRODUCTS, category=camera, query=camera, sort=rating, requiresLogin=false
 - "Show me laptops" → SEARCH_PRODUCTS, category=laptop, mode=rent, requiresLogin=false
+- "I want a laptop for rent" → SEARCH_PRODUCTS, category=laptop, mode=rent, requiresLogin=false
 - "I want to buy a MacBook" → SEARCH_PRODUCTS, product=MacBook, mode=buy, requiresLogin=false
+- "Show me gaming products" → SEARCH_PRODUCTS, category=gaming, query=gaming, requiresLogin=false
+- "Take me to the camera category" → VIEW_CATEGORIES, category=camera, requiresLogin=false
 - "Rent this laptop" → RENT_PRODUCT, product=laptop, requiresLogin=true
 - "Buy this laptop" → BUY_PRODUCT, product=laptop, requiresLogin=true, requiresConfirmation=true
 - "I am renting this laptop and want to buy it" → ASK_OWNER_TO_BUY, product=laptop, requiresLogin=true
@@ -78,11 +83,23 @@ Rules:
 - "Show my sales" → VIEW_OWNER_SALES, requiresLogin=true
 - "Open admin dashboard" → VIEW_ADMIN_DASHBOARD, requiresLogin=true
 - "Show me something under 500 rupees a day" → SEARCH_PRODUCTS, maxPrice=500, priceUnit=day, requiresLogin=false
+- "I need a camera for 3 days under ₹800 per day" → SEARCH_PRODUCTS, category=camera, query=camera, maxPrice=800, priceUnit=day, duration=3, requiresLogin=false
 - "I need something for 3 days and delivery" → SEARCH_PRODUCTS, duration=3, fulfillmentMethod=delivery, requiresLogin=false
 - "Show products near me" → SEARCH_PRODUCTS, location=user's city if known, otherwise null, requiresLogin=false
 - "What's available in Pune?" → SEARCH_PRODUCTS, location=Pune, requiresLogin=false
 - "I want delivery" → SEARCH_PRODUCTS, fulfillmentMethod=delivery, requiresLogin=false
 - "I'll pick it up myself" → SEARCH_PRODUCTS, fulfillmentMethod=pickup, requiresLogin=false
+- "Show products available for pickup" → SEARCH_PRODUCTS, fulfillmentMethod=pickup, query=null, requiresLogin=false
+- "Show products with delivery" → SEARCH_PRODUCTS, fulfillmentMethod=delivery, query=null, requiresLogin=false
+- "Show pickup options" → SEARCH_PRODUCTS, fulfillmentMethod=pickup, query=null, requiresLogin=false
+
+CRITICAL RULES:
+- Searching/browsing products NEVER requires login. Always set requiresLogin=false for SEARCH_PRODUCTS, VIEW_PRODUCT, VIEW_CATEGORIES, GENERAL_HELP, VIEW_HELP, CHECK_AVAILABILITY.
+- NEVER respond with "Please log in" for simple product browsing/searching requests.
+- If the user asks for a product by name, always use SEARCH_PRODUCTS (not UNKNOWN).
+- If the user mentions any product or category, always classify as SEARCH_PRODUCTS (not UNKNOWN).
+- Only use UNKNOWN if the request is completely unrelated to RentHub.
+- Use ₹ symbol for Indian Rupees in messages.
 
 Price normalization (always INR):
 - ₹500, 500 rupees, 500 rs, Rs 500, 500 INR → maxPrice=500

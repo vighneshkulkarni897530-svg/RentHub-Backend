@@ -55,7 +55,6 @@ const purchaseSchema = new Schema<IPurchase>(
 
 purchaseSchema.index({ buyer: 1, status: 1, createdAt: -1 });
 purchaseSchema.index({ owner: 1, status: 1, createdAt: -1 });
-purchaseSchema.index({ product: 1 });
 
 export const Purchase = mongoose.model<IPurchase>('Purchase', purchaseSchema);
 export default Purchase;

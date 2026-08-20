@@ -47,10 +47,12 @@ app.use(
 );
 
 // Permissions policy (hardening)
+// NOTE: microphone=(self) is required for the AI Voice Assistant
+// to use the browser Web Speech API for voice input.
 app.use((_req: Request, res: Response, next: NextFunction) => {
   res.setHeader(
     'Permissions-Policy',
-    'camera=(), microphone=(), geolocation=(self), payment=(self "https://checkout.razorpay.com"), usb=(), battery=()'
+    'camera=(), microphone=(self), geolocation=(self), payment=(self "https://checkout.razorpay.com"), usb=(), battery=()'
   );
   next();
 });

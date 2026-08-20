@@ -1,4 +1,4 @@
-   import ApiError from '../utils/ApiError';
+import ApiError from '../utils/ApiError';
 import slugify from '../utils/slugify';
 import ProductRepository from '../repositories/ProductRepository';
 import CategoryRepository from '../repositories/CategoryRepository';
@@ -14,6 +14,11 @@ import { Types } from 'mongoose';
  */
 const TEST_PRODUCT_PATTERN = /smoke test|test camera|^test product$/i;
 const TEST_SLUG_PATTERN = /test-product|test-camera|smoke-test/i;
+
+/** Escape regex special characters in a user/AI-provided string. */
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 
 export class ProductService {
   async createProduct(ownerId: string, input: CreateProductInput, imageUrls: string[] = []) {
@@ -111,7 +116,14 @@ export class ProductService {
       if (/^[0-9a-fA-F]{24}$/.test(categoryValue)) {
         filter.category = categoryValue;
       } else {
-        const category = await CategoryRepository.findBySlug(categoryValue);
+        let category = await CategoryRepository.findBySlug(categoryValue);
+        if (!category) {
+          // Fallback: try a case-insensitive name match (e.g. "Camera" -> "Cameras").
+          // This handles AI-generated singular category names like "camera", "laptop",
+          // "projector" that don't match the plural slug ("cameras", "laptops", "projectors").
+          // Use a prefix match so "camera" matches "Cameras" and "laptop" matches "Laptops".
+          category = await CategoryRepository.findByName(new RegExp(`^${escapeRegExp(categoryValue)}`, 'i'));
+        }
         if (category) {
           filter.category = category._id;
         } else {
@@ -167,6 +179,16 @@ export class ProductService {
     // Availability: 'available' => not sold (rentable), 'rented' => currently rented.
     // The Product schema has no embedded availability object; the authoritative
     // field is productStatus ('available' | 'rented' | 'sold').
+    // Fulfillment method: 'delivery' or 'pickup' filters by deliveryOptions.
+    if (filters.delivery) {
+      const deliveryValue = String(filters.delivery).toLowerCase();
+      if (deliveryValue === 'delivery') {
+        filter.deliveryOptions = { $in: ['delivery', 'both'] };
+      } else if (deliveryValue === 'pickup') {
+        filter.deliveryOptions = { $in: ['pickup', 'both'] };
+      }
+    }
+
     if (filters.availability && filters.availability !== 'all') {
       const availabilityValue = String(filters.availability).toLowerCase();
       if (availabilityValue === 'available') {
@@ -242,4 +264,3 @@ export class ProductService {
 }
 
 export default new ProductService();
-
