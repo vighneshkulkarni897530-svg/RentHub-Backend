@@ -94,7 +94,7 @@ const pickupLocationSchema = new Schema(
 
 const bookingSchema = new Schema<IBooking>(
   {
-    product: { type: Schema.Types.ObjectId, ref: 'Product', required: true, index: true },
+    product: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
     renter: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
     owner: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
     startDate: { type: Date, required: true },

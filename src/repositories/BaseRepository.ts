@@ -40,7 +40,7 @@ export abstract class BaseRepository<T extends Document> {
       select?: string;
     } = {}
   ): Promise<T[]> {
-    const query = this.model.find(filter);
+    const query = this.model.find(filter).lean();
     if (options.select) query.select(options.select);
     if (options.populate) query.populate(options.populate);
     if (options.sort) query.sort(options.sort);

@@ -135,6 +135,13 @@ const productSchema = new Schema<IProduct>(
 productSchema.index({ title: 'text', description: 'text', tags: 'text' });
 productSchema.index({ category: 1, listingStatus: 1, moderationStatus: 1 });
 productSchema.index({ owner: 1, listingStatus: 1 });
+// Homepage / search performance: featured, trending, newest, and sale
+// queries filter on these fields together with listing/moderation status.
+productSchema.index({ isFeatured: 1, listingStatus: 1, moderationStatus: 1 });
+productSchema.index({ isTrending: 1, listingStatus: 1, moderationStatus: 1 });
+productSchema.index({ listingStatus: 1, moderationStatus: 1, createdAt: -1 });
+productSchema.index({ saleEnabled: 1, listingStatus: 1, moderationStatus: 1 });
+productSchema.index({ productStatus: 1, listingStatus: 1, moderationStatus: 1 });
 
 export const Product = mongoose.model<IProduct>('Product', productSchema);
 export default Product;

@@ -14,7 +14,7 @@ export interface IProductAvailability extends Document {
 
 const productAvailabilitySchema = new Schema<IProductAvailability>(
   {
-    product: { type: Schema.Types.ObjectId, ref: 'Product', required: true, index: true },
+    product: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
     reason: {
       type: String,
       enum: ['maintenance', 'blocked', 'unavailable'],
