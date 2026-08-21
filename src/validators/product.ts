@@ -41,6 +41,7 @@ export const createProductSchema = z.object({
   saleEnabled: z.boolean().default(false),
   salePrice: z.number().positive('Sale price must be positive').nullable().optional(),
   purchaseCondition: z.string().max(500).nullable().optional(),
+  images: z.array(z.string().url('Image URL must be valid')).max(10).optional(),
 });
 
 export const updateProductSchema = createProductSchema.partial();

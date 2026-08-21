@@ -1,9 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 import ApiError from '../utils/ApiError';
-import { uploadToCloudinary, isConfigured } from '../config/cloudinary';
+import { uploadToImageKit, isConfigured as isImageKitConfigured } from '../config/imagekit';
 
-// Local uploads directory (used when Cloudinary is not configured).
+// Local uploads directory (used when ImageKit is not configured).
 const uploadDir = path.resolve(process.cwd(), 'uploads');
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
@@ -29,33 +29,36 @@ function saveLocal(file: Express.Multer.File): { url: string; filename: string }
 
 export class UploadService {
   /**
-   * Upload a single file. Uses Cloudinary when configured.
+   * Upload a single file. Uses ImageKit when configured.
    * Falls back to local disk storage so the app remains fully usable
    * without any paid/external upload service.
    */
   async uploadFile(file: Express.Multer.File, folder = 'renthub') {
     if (!file) throw new ApiError(400, 'No file uploaded');
 
-    if (isConfigured) {
+    if (isImageKitConfigured) {
       try {
-        const result = await uploadToCloudinary({ buffer: file.buffer, mimetype: file.mimetype }, folder);
+        const result = await uploadToImageKit(
+          { buffer: file.buffer, mimetype: file.mimetype, originalname: file.originalname },
+          folder
+        );
         return {
           url: result.url,
-          publicId: result.publicId,
+          fileId: result.fileId,
           filename: file.originalname,
           mimetype: file.mimetype,
           size: file.size,
         };
       } catch (error) {
-        throw new ApiError(502, `Cloudinary upload failed: ${(error as Error).message}`);
+        throw new ApiError(502, `ImageKit upload failed: ${(error as Error).message}`);
       }
     }
 
-    // Cloudinary not configured — save locally so uploads still work.
+    // ImageKit not configured — save locally so uploads still work.
     const local = saveLocal(file);
     return {
       url: local.url,
-      publicId: '',
+      fileId: '',
       filename: local.filename,
       mimetype: file.mimetype,
       size: file.size,

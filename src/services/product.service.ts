@@ -32,12 +32,15 @@ export class ProductService {
       slug = `${baseSlug}-${count++}`;
     }
 
+    // Prefer uploaded file URLs; fall back to image URLs sent in the JSON body.
+    const finalImages = imageUrls.length > 0 ? imageUrls : (input.images || []);
+
     const product = await ProductRepository.create({
       title: input.title,
       description: input.description,
       category: input.category as any,
       owner: ownerId as any,
-      images: imageUrls,
+      images: finalImages,
       condition: input.condition,
       location: (input.location || {
         address: '',
@@ -64,10 +67,10 @@ export class ProductService {
     });
 
     // Save individual image records
-    for (let i = 0; i < imageUrls.length; i++) {
+    for (let i = 0; i < finalImages.length; i++) {
       await ProductImageRepository.create({
         product: product._id as any,
-        url: imageUrls[i],
+        url: finalImages[i],
         isPrimary: i === 0,
         sortOrder: i,
       });
@@ -87,6 +90,20 @@ export class ProductService {
     if (input.title) updateData.slug = slugify(input.title);
 
     const updated = await ProductRepository.updateById(id, updateData);
+
+    // Sync individual image records when images are updated.
+    if (input.images) {
+      await ProductImageRepository.deleteForProduct(id);
+      for (let i = 0; i < input.images.length; i++) {
+        await ProductImageRepository.create({
+          product: id as any,
+          url: input.images[i],
+          isPrimary: i === 0,
+          sortOrder: i,
+        });
+      }
+    }
+
     return ProductRepository.findByIdPopulated(id);
   }
 
