@@ -16,9 +16,9 @@ router.put('/profile', validate({ body: updateProfileSchema }), UserController.u
 router.get('/dashboard/:role', UserController.getDashboardStats);
 router.get('/kyc', KycController.getVerificationStatus);
 router.post('/kyc', validate({ body: submitKycSchema }), KycController.submitVerification);
-router.get('/:id', validate({ params: userIdParamsSchema }), UserController.getUserById);
 
-// Wishlist
+// Wishlist — MUST be defined BEFORE '/:id' so 'wishlist' is not captured
+// by the ':id' param (which would reject it as an ObjectId).
 router.get('/wishlist', UserController.getWishlist);
 router.post(
   '/wishlist/:productId',
@@ -30,6 +30,8 @@ router.delete(
   validate({ params: wishlistProductParamsSchema }),
   UserController.removeFromWishlist
 );
+
+router.get('/:id', validate({ params: userIdParamsSchema }), UserController.getUserById);
 
 export default router;
 

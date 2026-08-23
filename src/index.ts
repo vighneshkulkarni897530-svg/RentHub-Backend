@@ -9,6 +9,7 @@ import cookieParser from 'cookie-parser';
 import path from 'path';
 
 import connectDB from './config/db';
+import env from './config/env';
 import logger from './config/logger';
 import allRoutes from './routes';
 import { initSocket } from './socket';
@@ -24,8 +25,11 @@ const PORT = process.env.PORT || 5000;
 connectDB();
 
 // Middleware
+// CORS: honour CLIENT_URL (comma-separated origins) from env so production
+// origins (e.g. Vercel) can reach the API; local dev falls back to
+// http://localhost:3000 via env.ts default.
 app.use(cors({
-    origin: ['http://localhost:3000', 'http://localhost:3001'],
+    origin: env.clientUrl.split(',').map((s: string) => s.trim()),
     credentials: true,
 }));
 // helmet with custom Permissions-Policy so the AI Voice Assistant

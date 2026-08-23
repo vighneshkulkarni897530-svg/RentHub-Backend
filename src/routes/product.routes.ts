@@ -17,12 +17,17 @@ const router = Router();
 // Public routes
 router.get('/', validate({ query: listProductsQuerySchema }), ProductController.listProducts);
 router.get('/slug/:slug', validate({ params: productSlugParamsSchema }), ProductController.getProductBySlug);
+
+// Protected: owner's own listings — must be defined BEFORE '/:id' so 'my'
+// is not captured by the ':id' param (which would reject 'my' as an ObjectId).
+router.get('/my', authenticate, ProductController.getOwnerProducts);
+
+// Public-by-id routes (kept public — only '/my' requires auth)
 router.get('/:id', validate({ params: productIdParamsSchema }), ProductController.getProductById);
 router.get('/:id/availability', validate({ params: productIdParamsSchema }), ProductController.getAvailability);
 
 // Protected routes (owner/admin)
 router.use(authenticate);
-router.get('/my', ProductController.getOwnerProducts);
 router.post(
   '/',
   authorize('owner', 'admin'),
